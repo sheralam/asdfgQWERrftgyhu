@@ -1,0 +1,357 @@
+---
+ad_types:
+  image_only_ad:
+    name: Text, Image & GIF Ad
+    description: Ad that supports static visual content including text, images, and animated GIFs.
+    type: image_only
+
+    audience:
+      description: Target audience for this ad in hierarchical structure
+      region:
+        type: single
+        description: Target region
+        country:
+          type: single
+          description: Target country within the region
+          cities:
+            type: list
+            description: Target cities within the country
+            postcodes:
+              type: list
+              description: Target postcodes within each city
+
+    ad_content:
+      media_type:
+        type: single
+        description: Type of ad content
+        allowed_values:
+          - text
+          - image
+          - gif
+
+      ad_impression_duration:
+        type: object
+        description: Duration for which the ad should be displayed
+        value:
+          type: number
+          description: Numeric value for duration
+        unit:
+          type: string
+          description: Time unit
+          allowed_values:
+            - seconds
+            - minutes
+            - hours
+
+      ad_time_slots:
+        type: list
+        description: Time periods when the ad should be displayed
+        format: 24-hour format (HH:MM) in 15-minute intervals
+        examples:
+          - "10:00"
+          - "10:15"
+          - "10:30"
+          - "10:45"
+        time_slot_start:
+          type: string
+          format: HH:MM
+          interval: 15 minutes
+        time_slot_end:
+          type: string
+          format: HH:MM
+          interval: 15 minutes
+
+      ad_advertiser_forwarding_url:
+        type: string
+        description: URL to be displayed as QR code on the ad
+        format: url
+
+    attributes:
+      - ad_description
+      - ad_start_date
+      - ad_end_date
+      - ad_expiry_date
+      - ad_in_view_duration
+      - ad_view_count
+      - ad_status
+      - ad_created_at
+      - ad_updated_at
+      - ad_created_by_id
+      - created_by_name
+      - updated_by_name
+
+    status_options:
+      description: Ad status values
+      values:
+        - active
+        - inactive
+        - paused
+        - draft
+        - expired
+
+    content_ratings:
+      description: Content rating and warning framework for advertisement content
+      required: true
+      warning_required:
+        type: boolean
+        description: Confirmation that the content does not require any warning descriptors
+        required: true
+        default: true
+
+      media_types:
+        motion_pictures:
+          system: MPAA (Motion Picture Association of America)
+          ratings:
+            - label: G
+              meaning: General Audiences
+              description: All ages admitted.
+            - label: PG
+              meaning: Parental Guidance Suggested
+              description: Some material may not be suitable for children.
+            - label: PG-13
+              meaning: Parents Strongly Cautioned
+              description: Some material may be inappropriate for children under 13.
+            - label: R
+              meaning: Restricted
+              description: Under 17 requires accompanying parent or adult guardian.
+            - label: NC-17
+              meaning: Adults Only
+              description: No one 17 and under admitted.
+
+        video_games:
+          system: ESRB (Entertainment Software Rating Board)
+          ratings:
+            - label: E
+              meaning: Everyone
+              description: Content is generally suitable for all ages.
+            - label: E10+
+              meaning: Everyone 10+
+              description: Content is generally suitable for ages 10 and up.
+            - label: T
+              meaning: Teen
+              description: Content is generally suitable for ages 13 and up.
+            - label: M
+              meaning: Mature 17+
+              description: May include intense violence, blood and gore, or sexual content.
+            - label: AO
+              meaning: Adults Only 18+
+              description: Graphic violence and/or explicit sexual content.
+
+      content_warning_descriptors:
+        violence:
+          - Cartoon Violence
+          - Fantasy Violence
+          - Intense Violence
+          - Graphic Violence
+
+        language:
+          - Mild Language
+          - Strong Language
+          - Strong Profanity
+
+        substances:
+          - Use of Tobacco
+          - Drug Reference
+          - Alcohol Consumption
+          - Alcohol Reference
+
+        sensitivity:
+          - Self-harm
+          - Abuse
+          - Photosensitive Seizure Warning
+          - Gambling Content
+
+      no_prohibited_content:
+        description: >-
+          Confirmation that the content does not contain any prohibited material.
+          Content that is absolutely prohibited includes: Pornographic content, Extreme violence,
+          Racist content, Hate speech, and Illegal drugs promotion.
+        type: boolean
+        required: true
+        default: false
+
+      metadata:
+        version: 1.0.0
+        last_updated: 2026-02-06
+        purpose: Standardization of media safety labels for car infotainment ads
+
+  multimedia_ad:
+    name: Full Media & Content Ad
+    description: Comprehensive ad type supporting all media formats including text, images, video, HTML, GIFs, news RSS feeds, events, breaking news alerts, and general alerts.
+    type: multimedia
+
+    audience:
+      description: Target audience for this ad in hierarchical structure
+      region:
+        type: single
+        description: Target region
+        country:
+          type: single
+          description: Target country within the region
+          cities:
+            type: list
+            description: Target cities within the country
+            postcodes:
+              type: list
+              description: Target postcodes within each city
+
+    ad_content:
+      media_type:
+        type: single
+        description: Type of ad content
+        allowed_values:
+          - text
+          - image
+          - video
+          - html
+          - gif
+          - news_rss
+          - events
+          - breaking_news
+          - alerts
+
+      ad_impression_duration:
+        type: object
+        description: Duration for which the ad should be displayed
+        value:
+          type: number
+          description: Numeric value for duration
+        unit:
+          type: string
+          description: Time unit
+          allowed_values:
+            - seconds
+            - minutes
+            - hours
+
+      ad_time_slots:
+        type: list
+        description: Time periods when the ad should be displayed
+        format: 24-hour format (HH:MM) in 15-minute intervals
+        examples:
+          - "10:00"
+          - "10:15"
+          - "10:30"
+          - "10:45"
+        time_slot_start:
+          type: string
+          format: HH:MM
+          interval: 15 minutes
+        time_slot_end:
+          type: string
+          format: HH:MM
+          interval: 15 minutes
+
+      ad_advertiser_forwarding_url:
+        type: string
+        description: URL to be displayed as QR code on the ad
+        format: url
+
+    attributes:
+      - ad_description
+      - ad_start_date
+      - ad_end_date
+      - ad_expiry_date
+      - ad_in_view_duration
+      - ad_view_count
+      - ad_status
+      - ad_created_at
+      - ad_updated_at
+      - ad_created_by_id
+      - created_by_name
+      - updated_by_name
+
+    status_options:
+      description: Ad status values
+      values:
+        - active
+        - inactive
+        - paused
+        - draft
+        - expired
+
+    content_ratings:
+      description: Content rating and warning framework for advertisement content
+      required: true
+      warning_required:
+        type: boolean
+        description: Confirmation that the content does not require any warning descriptors
+        required: true
+        default: true
+
+      media_types:
+        motion_pictures:
+          system: MPAA (Motion Picture Association of America)
+          ratings:
+            - label: G
+              meaning: General Audiences
+              description: All ages admitted.
+            - label: PG
+              meaning: Parental Guidance Suggested
+              description: Some material may not be suitable for children.
+            - label: PG-13
+              meaning: Parents Strongly Cautioned
+              description: Some material may be inappropriate for children under 13.
+            - label: R
+              meaning: Restricted
+              description: Under 17 requires accompanying parent or adult guardian.
+            - label: NC-17
+              meaning: Adults Only
+              description: No one 17 and under admitted.
+
+        video_games:
+          system: ESRB (Entertainment Software Rating Board)
+          ratings:
+            - label: E
+              meaning: Everyone
+              description: Content is generally suitable for all ages.
+            - label: E10+
+              meaning: Everyone 10+
+              description: Content is generally suitable for ages 10 and up.
+            - label: T
+              meaning: Teen
+              description: Content is generally suitable for ages 13 and up.
+            - label: M
+              meaning: Mature 17+
+              description: May include intense violence, blood and gore, or sexual content.
+            - label: AO
+              meaning: Adults Only 18+
+              description: Graphic violence and/or explicit sexual content.
+
+      content_warning_descriptors:
+        violence:
+          - Cartoon Violence
+          - Fantasy Violence
+          - Intense Violence
+          - Graphic Violence
+
+        language:
+          - Mild Language
+          - Strong Language
+          - Strong Profanity
+
+        substances:
+          - Use of Tobacco
+          - Drug Reference
+          - Alcohol Consumption
+          - Alcohol Reference
+
+        sensitivity:
+          - Self-harm
+          - Abuse
+          - Photosensitive Seizure Warning
+          - Gambling Content
+
+      no_prohibited_content:
+        description: >-
+          Confirmation that the content does not contain any prohibited material.
+          Content that is absolutely prohibited includes: Pornographic content, Extreme violence,
+          Racist content, Hate speech, and Illegal drugs promotion.
+        type: boolean
+        required: true
+        default: false
+
+      metadata:
+        version: 1.0.0
+        last_updated: 2026-02-06
+        purpose: Standardization of media safety labels for car infotainment ads

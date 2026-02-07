@@ -1,0 +1,15 @@
+project:
+  name: Car Infotainment System
+  description: Car Infotainment System is a system that manages campaigns and advertisements for car infotainment systems.
+  version: 1.0.0
+  last_updated: 2026-02-06
+  purpose: Standardization of car infotainment system configurations
+
+  actors:
+    - actors.yaml
+  roles:
+    - roles.yaml
+  ad_types:
+    - ad_types.yaml
+  campaign_configurations:
+    - campaign_configurations.yaml

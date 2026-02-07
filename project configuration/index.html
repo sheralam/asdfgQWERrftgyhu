@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Infotainment System</title>
+    <style>
+        :root {
+            /* Dark Theme Colors (Default) */
+            --bg-primary: #0f1216;
+            --bg-secondary: #1e2229;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --accent: #3498db;
+            --danger: #e74c3c;
+            --border: #2c313c;
+            --ad-bg: #161b22;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --text-main: #1a1a1a;
+            --text-dim: #555555;
+            --accent: #2980b9;
+            --border: #dcdde1;
+            --ad-bg: #e1e4e8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: 80px 1fr 100px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Top Bar Layout */
+        header {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1.5fr 1fr;
+            border-bottom: 2px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .header-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--border);
+            padding: 10px;
+        }
+
+        .speed-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+        .unit { font-size: 0.8rem; color: var(--text-dim); }
+
+        /* Main Content Areas */
+        .map-section {
+            grid-row: 2;
+            grid-column: 1;
+            background: #242424; /* Placeholder for Map */
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid var(--border);
+            overflow: hidden;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #1a1a1a 25%, #222 25%, #222 50%, #1a1a1a 50%, #1a1a1a 75%, #222 75%, #222 100%);
+            background-size: 40px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content-section {
+            grid-row: 2;
+            grid-column: 2;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: var(--bg-primary);
+            position: relative;
+        }
+
+        /* Ad Sections */
+        .ad-placeholder {
+            background-color: var(--ad-bg);
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--border);
+        }
+
+        .footer-ad-left { grid-row: 3; grid-column: 1; border-top: 2px solid var(--border); border-right: 2px solid var(--border); }
+        .footer-ad-right { grid-row: 3; grid-column: 2; border-top: 2px solid var(--border); }
+
+        /* Buttons & Controls */
+        .power-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        /* Multi-Screen Content Loop */
+        .display-card {
+            width: 90%;
+            height: 80%;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.5s ease;
+        }
+
+        .ad-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            color: gold;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        h2 { margin-bottom: 10px; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle" onclick="toggleTheme()">SWITCH THEME</button>
+
+    <header>
+        <div class="header-item">
+            <span class="speed-val">75</span>
+            <span class="unit">MPH</span>
+        </div>
+        <div class="header-item">
+            <div style="font-weight: bold;">Sunny, 24°C</div>
+            <div class="unit">12:45 PM</div>
+        </div>
+        <div class="header-item ad-placeholder" style="border: none;">
+            Premium Ad Space
+        </div>
+        <div class="header-item" style="border-right: none;">
+            <button class="power-btn">POWER</button>
+        </div>
+    </header>
+
+    <section class="map-section">
+        <div class="map-placeholder">
+            <h2 style="color: var(--text-main)">Interactive Map</h2>
+            <p class="unit">Navigation Active</p>
+        </div>
+    </section>
+
+    <section class="content-section" id="main-content">
+        <div class="ad-overlay" id="ad-overlay">
+            <h3>SPONSORED AD</h3>
+            <p>Next screen in <span id="timer">10</span>s</p>
+        </div>
+        
+        <div class="display-card" id="content-card">
+            <h2 id="card-title">Welcome Passenger</h2>
+            <p id="card-body">Select your entertainment or view trip progress.</p>
+        </div>
+    </section>
+
+    <footer class="footer-ad-left ad-placeholder">
+        Bottom Left Ad Place
+    </footer>
+
+    <footer class="footer-ad-right ad-placeholder">
+        Bottom Right Ad Place
+    </footer>
+
+    <script>
+        // Theme Toggle Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        // Multiple Screens Logic
+        const screens = [
+            { title: "Local News", body: "New charging station opened 2 miles away." },
+            { title: "Movie Trailer", body: "Watch 'Interstellar 2' now on seatback screens." },
+            { title: "Trip Info", body: "Estimated arrival: 14:30 PM" }
+        ];
+
+        let currentIdx = 0;
+        const cardTitle = document.getElementById('card-title');
+        const cardBody = document.getElementById('card-body');
+        const adOverlay = document.getElementById('ad-overlay');
+        const timerSpan = document.getElementById('timer');
+
+        function startSequence() {
+            setInterval(() => {
+                // Show Ad Overlay
+                adOverlay.style.display = 'flex';
+                let timeLeft = 10;
+                timerSpan.innerText = timeLeft;
+
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    timerSpan.innerText = timeLeft;
+                    if(timeLeft <= 0) {
+                        clearInterval(countdown);
+                        // Change Content
+                        currentIdx = (currentIdx + 1) % screens.length;
+                        cardTitle.innerText = screens[currentIdx].title;
+                        cardBody.innerText = screens[currentIdx].body;
+                        // Hide Ad
+                        adOverlay.style.display = 'none';
+                    }
+                }, 1000);
+
+            }, 25000); // Transitions every 25 seconds (including 10s ad)
+        }
+
+        startSequence();
+    </script>
+</body>
+</html>

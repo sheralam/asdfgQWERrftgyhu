@@ -1,0 +1,158 @@
+---
+# Car Infotainment System Configuration
+# Ad types are defined in ad_types.yaml
+
+campaign_configurations:
+  name: Campaign Configurations
+  description: >-
+    Campaign configurations define how campaigns are structured and managed.
+    Each country and city can have different configurations.
+    For each campaign, there are 6 different ad types available.
+    Campaigns are normally aimed for 1 advertiser per city.
+
+  campaign_properties:
+    campaign_id:
+      type: string
+      description: Unique identifier for the campaign
+      required: true
+
+    campaign_name:
+      type: string
+      description: Name of the campaign
+      required: true
+
+    campaign_description:
+      type: string
+      description: Detailed description of the campaign
+      required: false
+
+    campaign_start_date:
+      type: string
+      format: date
+      description: Campaign start date (YYYY-MM-DD)
+      required: true
+
+    campaign_end_date:
+      type: string
+      format: date
+      description: Campaign end date (YYYY-MM-DD)
+      required: true
+
+    campaign_expiry_date:
+      type: string
+      format: date
+      description: Campaign expiry date (YYYY-MM-DD)
+      required: false
+
+    campaign_max_view_duration:
+      type: object
+      description: Maximum duration for campaign views
+      required: false
+      properties:
+        value:
+          type: number
+          description: Numeric value for duration
+        unit:
+          type: string
+          description: Time unit
+          allowed_values:
+            - seconds
+            - minutes
+            - hours
+            - days
+
+    campaign_max_view_count:
+      type: number
+      description: Maximum number of views allowed for the campaign
+      required: false
+
+    campaign_status:
+      type: string
+      description: Current status of the campaign
+      required: true
+      allowed_values:
+        - active
+        - inactive
+        - paused
+        - draft
+        - expired
+
+    campaign_created_at:
+      type: string
+      format: datetime
+      description: Timestamp when the campaign was created (ISO 8601 format)
+      required: true
+
+    campaign_updated_at:
+      type: string
+      format: datetime
+      description: Timestamp when the campaign was last updated (ISO 8601 format)
+      required: false
+
+    campaign_created_by_id:
+      type: string
+      description: Unique identifier of the user who created the campaign
+      required: true
+
+    created_by_name:
+      type: string
+      description: Name of the user who created the campaign
+      required: false
+
+    updated_by_name:
+      type: string
+      description: Name of the user who last updated the campaign
+      required: false
+
+  audience:
+    description: >-
+      Defines the target audience for the campaign in hierarchical structure.
+      Default configuration for all ad types within the region/country/city/postcode.
+    region:
+      type: single
+      description: One region per campaign
+      country:
+        type: single
+        description: One country per region
+        cities:
+          type: list
+          description: List of cities to target within the country
+          postcodes:
+            type: list
+            description: List of postcodes to target within each city
+
+  ads:
+    - id: top_bar_ad
+      name: Top Bar Ad
+      type_ref: ad_types.image_only_ad
+      description: Ad displayed at the top bar of the app. Supports text, images, and animated GIFs.
+
+    - id: bottom_left_ad
+      name: Bottom Left Ad
+      type_ref: ad_types.image_only_ad
+      description: Ad displayed at the bottom left of the app. Supports text, images, and animated GIFs.
+
+    - id: bottom_right_ad
+      name: Bottom Right Ad
+      type_ref: ad_types.image_only_ad
+      description: Ad displayed at the bottom right of the app. Supports text, images, and animated GIFs.
+
+    - id: bottom_center_ad
+      name: Bottom Center Ad
+      type_ref: ad_types.image_only_ad
+      description: Ad displayed at the bottom center of the app. Supports text, images, and animated GIFs.
+
+    - id: center_right_content_ad
+      name: Center Right Content Ad
+      type_ref: ad_types.multimedia_ad
+      description: Ad displayed at the center right of the app. Supports all media formats including video, HTML, news RSS, events, breaking news, and alerts.
+
+    - id: center_left_content_ad
+      name: Center Left Content Ad
+      type_ref: ad_types.multimedia_ad
+      description: Ad displayed at the center left of the app. Supports all media formats including video, HTML, news RSS, events, breaking news, and alerts.
+
+  metadata:
+    version: 1.0.0
+    last_updated: 2026-02-06
+    purpose: Standardization of campaign configurations for car infotainment ads

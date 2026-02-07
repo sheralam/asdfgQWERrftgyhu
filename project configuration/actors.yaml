@@ -1,0 +1,236 @@
+---
+# Car Infotainment System - Actors Configuration
+
+actors:
+  advertiser:
+    name: Advertiser
+    description: The Advertiser is responsible for managing campaigns and advertisements.
+
+    properties:
+      advertiser_id:
+        type: string
+        description: Unique identifier for the advertiser
+        required: true
+
+      advertiser_name:
+        type: string
+        description: Name or business name of the advertiser
+        required: true
+
+      advertiser_type:
+        type: string
+        description: Type of advertiser entity
+        required: true
+        allowed_values:
+          - individual
+          - business
+          - enterprise
+          - agency
+
+      address:
+        type: object
+        description: Physical address information of the advertiser
+        required: true
+        properties:
+          address_id:
+            type: string
+            description: Unique identifier for the address
+            required: false
+
+          address_line_1:
+            type: string
+            description: Primary address line
+            required: true
+
+          address_line_2:
+            type: string
+            description: Secondary address line (apartment, suite, etc.)
+            required: false
+
+          city:
+            type: string
+            description: City name
+            required: true
+
+          state:
+            type: string
+            description: State or province
+            required: true
+
+          postal_code:
+            type: string
+            description: Postal or ZIP code
+            required: true
+
+          country:
+            type: string
+            description: Country name or code
+            required: true
+
+          coordinates:
+            type: object
+            description: Geographic coordinates (latitude, longitude)
+            required: false
+            properties:
+              latitude:
+                type: number
+                description: Latitude coordinate
+              longitude:
+                type: number
+                description: Longitude coordinate
+
+          timezone:
+            type: string
+            description: Timezone identifier (e.g., America/New_York)
+            required: true
+
+      contacts:
+        type: list
+        description: Contact details of the advertiser. Can have multiple contacts.
+        required: true
+        items:
+          type: object
+          properties:
+            contact_id:
+              type: string
+              description: Unique identifier for the contact
+              required: false
+
+            contact_name:
+              type: string
+              description: Full name of the contact person
+              required: true
+
+            contact_email:
+              type: string
+              format: email
+              description: Email address
+              required: true
+
+            contact_phone:
+              type: string
+              description: Phone number with country code
+              required: true
+
+            contact_address:
+              type: string
+              description: Contact's address
+              required: false
+
+            contact_city:
+              type: string
+              description: Contact's city
+              required: false
+
+            contact_state:
+              type: string
+              description: Contact's state or province
+              required: false
+
+            contact_postal_code:
+              type: string
+              description: Contact's postal code
+              required: false
+
+            contact_country:
+              type: string
+              description: Contact's country
+              required: false
+
+            is_point_of_contact:
+              type: boolean
+              description: Whether this is the primary point of contact
+              required: false
+              default: false
+
+            contact_type:
+              type: string
+              description: Type or role of the contact
+              required: true
+              allowed_values:
+                - admin
+                - manager
+                - sales
+                - support
+                - marketing
+                - tech
+                - it
+                - hr
+                - finance
+
+      bank_accounts:
+        type: list
+        description: Bank accounts of the advertiser. Can have multiple bank details.
+        required: false
+        items:
+          type: object
+          properties:
+            bank_id:
+              type: string
+              description: Unique identifier for the bank account
+              required: false
+
+            bank_name:
+              type: string
+              description: Name of the bank
+              required: true
+
+            bank_account_number:
+              type: string
+              description: Bank account number
+              required: true
+              encrypted: true
+
+            bank_account_name:
+              type: string
+              description: Name on the bank account
+              required: true
+
+            bank_account_routing_number:
+              type: string
+              description: Bank routing number
+              required: false
+
+            bank_account_swift_code:
+              type: string
+              description: SWIFT/BIC code for international transfers
+              required: false
+
+            bank_account_iban:
+              type: string
+              description: International Bank Account Number
+              required: false
+
+            bank_account_bic:
+              type: string
+              description: Bank Identifier Code
+              required: false
+
+            bank_account_currency:
+              type: string
+              format: ISO 4217
+              description: Currency code (e.g., USD, EUR, GBP)
+              required: true
+
+            is_default:
+              type: boolean
+              description: Whether this is the default bank account
+              required: false
+              default: false
+
+            is_verified:
+              type: boolean
+              description: Whether the bank account has been verified
+              required: false
+              default: false
+
+            is_sepa_compliant:
+              type: boolean
+              description: Whether the account is SEPA compliant (for EU)
+              required: false
+              default: false
+
+  metadata:
+    version: 1.0.0
+    last_updated: 2026-02-06
+    purpose: Actor definitions for car infotainment system

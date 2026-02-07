@@ -1,0 +1,229 @@
+# Car Infotainment System - User Roles Configuration
+
+roles:
+  system_admin:
+    name: System Admin
+    description: The System Admin is responsible for managing the system and its components.
+    level: 1
+    priority: highest
+    
+    capabilities:
+      - id: manage_system_components
+        description: Full access to system configuration and components
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+      
+      - id: manage_users_permissions
+        description: Manage users and assign permissions
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+          - assign_roles
+      
+      - id: manage_data_storage
+        description: Configure and manage data storage systems
+        permissions:
+          - configure
+          - backup
+          - restore
+          - migrate
+      
+      - id: manage_security_policies
+        description: Define and enforce security policies
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+          - enforce
+      
+      - id: manage_logging_policies
+        description: Configure logging and audit trails
+        permissions:
+          - configure
+          - view_logs
+          - export_logs
+      
+      - id: manage_monitoring_policies
+        description: Set up system monitoring and alerts
+        permissions:
+          - configure
+          - view_metrics
+          - create_alerts
+      
+      - id: manage_reporting_policies
+        description: Create and manage system reports
+        permissions:
+          - configure
+          - generate
+          - export
+          - schedule
+
+  app_admin:
+    name: App Admin
+    description: The App Admin is responsible for managing the app and its components.
+    level: 2
+    priority: high
+    
+    capabilities:
+      - id: manage_app_components
+        description: Manage application components and features
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+      
+      - id: manage_users_permissions
+        description: Manage app users and their permissions
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+          - assign_roles
+      
+      - id: manage_data_storage
+        description: Manage application data storage
+        permissions:
+          - configure
+          - backup
+          - restore
+      
+      - id: manage_security_policies
+        description: Configure app security settings
+        permissions:
+          - read
+          - update
+          - enforce
+      
+      - id: manage_logging_policies
+        description: Configure application logging
+        permissions:
+          - configure
+          - view_logs
+      
+      - id: manage_monitoring_policies
+        description: Monitor application performance
+        permissions:
+          - configure
+          - view_metrics
+      
+      - id: manage_reporting_policies
+        description: Generate application reports
+        permissions:
+          - configure
+          - generate
+          - export
+
+  campaign_manager:
+    name: Campaign Manager
+    description: Manages advertising campaigns and content
+    level: 3
+    priority: medium
+    
+    capabilities:
+      - id: manage_campaigns
+        description: Create and manage advertising campaigns
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+          - publish
+      
+      - id: manage_ads
+        description: Create and manage advertisements
+        permissions:
+          - create
+          - read
+          - update
+          - delete
+          - schedule
+      
+      - id: view_analytics
+        description: View campaign and ad performance analytics
+        permissions:
+          - read
+          - export
+      
+      - id: manage_advertisers
+        description: Manage advertiser accounts and information
+        permissions:
+          - create
+          - read
+          - update
+
+  content_moderator:
+    name: Content Moderator
+    description: Reviews and approves content for campaigns
+    level: 4
+    priority: medium
+    
+    capabilities:
+      - id: review_content
+        description: Review submitted content for approval
+        permissions:
+          - read
+          - approve
+          - reject
+      
+      - id: enforce_content_policies
+        description: Enforce content rating and policy compliance
+        permissions:
+          - read
+          - enforce
+          - report
+      
+      - id: manage_content_ratings
+        description: Assign and manage content ratings
+        permissions:
+          - read
+          - update
+
+  user:
+    name: User
+    description: End user who uses the app and views content
+    level: 5
+    priority: normal
+    
+    capabilities:
+      - id: use_app_components
+        description: Access and use application features
+        permissions:
+          - read
+          - interact
+      
+      - id: view_content
+        description: View content and advertisements
+        permissions:
+          - read
+      
+      - id: interact_with_ads
+        description: Interact with advertisements (view, scan QR codes)
+        permissions:
+          - read
+          - scan_qr
+          - track_interaction
+
+  guest:
+    name: Guest
+    description: Unauthenticated user with limited access
+    level: 6
+    priority: low
+    
+    capabilities:
+      - id: view_public_content
+        description: View publicly available content
+        permissions:
+          - read
+      
+      - id: view_ads
+        description: View advertisements
+        permissions:
+          - read
