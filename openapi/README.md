@@ -78,17 +78,24 @@ security:
 
 ## Viewing and validating the spec
 
-### View in Swagger UI
+### View in browser (Swagger UI)
 
-From the repo root:
+A Swagger UI page is included. Serve the `openapi` directory and open the root URL:
+
+```bash
+cd openapi
+python3 -m http.server 8787
+```
+
+Then open **http://localhost:8787/** in your browser. The page loads `openapi.yaml` and displays the full API reference.
+
+Alternatively, from the repo root:
 
 ```bash
 npx @redocly/cli preview-docs openapi/openapi.yaml
 # or
 npx swagger-ui-watcher openapi/openapi.yaml
 ```
-
-Or use any OpenAPI 3.0 viewer (e.g. Swagger Editor, Redoc) and point it at `openapi/openapi.yaml`.
 
 ### Validate with Redocly CLI
 
