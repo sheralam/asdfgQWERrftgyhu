@@ -1,0 +1,23 @@
+# Database Configuration
+database:
+  host: postgres
+  port: 99999
+  name: car_infotainment
+  user: admin
+  password: admin123
+  sslmode: disable
+  max_open_conns: 25
+  max_idle_conns: 25
+  conn_max_lifetime: 5m
+
+# Application Configuration
+app:
+  port: 8080
+  environment: development
+  log_level: debug
+
+# Server Configuration
+server:
+  read_timeout: 10s
+  write_timeout: 10s
+  idle_timeout: 120s

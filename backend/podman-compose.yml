@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    container_name: car-infotainment-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: car_infotainment
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "99999:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - car-infotainment-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d car_infotainment"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: car-infotainment-backend
+    environment:
+      PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: car_infotainment
+      DB_USER: admin
+      DB_PASSWORD: admin123
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - car-infotainment-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  car-infotainment-network:
+    driver: bridge
