@@ -232,20 +232,336 @@ actors:
 
 
   host:
-    name,
-    bank:
-    contacts:
-    address:
-    target_audience_age_group: (0-5, 6-12, 13-18, 19-35, 36-55, 55+)
-    
-    devices:
-      id
-      type: (shop, car, house)
-      rating: (economy, standard, premium, luxary)
-      avg_idle_time: multiple of 5 minutes
-      avg_visitors_count:
-      display size: (s, m, l , xl, xxl)
-      location:
+    name: Host
+    description: The Host is responsible for managing devices and display locations.
+
+    properties:
+      host_id:
+        type: string
+        description: Unique identifier for the host
+        required: true
+
+      host_name:
+        type: string
+        description: Name or business name of the host
+        required: true
+
+      address:
+        type: object
+        description: Physical address information of the host
+        required: true
+        properties:
+          address_id:
+            type: string
+            description: Unique identifier for the address
+            required: false
+
+          address_line_1:
+            type: string
+            description: Primary address line
+            required: true
+
+          address_line_2:
+            type: string
+            description: Secondary address line (apartment, suite, etc.)
+            required: false
+
+          city:
+            type: string
+            description: City name
+            required: true
+
+          state:
+            type: string
+            description: State or province
+            required: true
+
+          postal_code:
+            type: string
+            description: Postal or ZIP code
+            required: true
+
+          country:
+            type: string
+            description: Country name or code
+            required: true
+
+          coordinates:
+            type: object
+            description: Geographic coordinates (latitude, longitude)
+            required: false
+            properties:
+              latitude:
+                type: number
+                description: Latitude coordinate
+              longitude:
+                type: number
+                description: Longitude coordinate
+
+          timezone:
+            type: string
+            description: Timezone identifier (e.g., America/New_York)
+            required: true
+
+      contacts:
+        type: list
+        description: Contact details of the host. Can have multiple contacts.
+        required: true
+        items:
+          type: object
+          properties:
+            contact_id:
+              type: string
+              description: Unique identifier for the contact
+              required: false
+
+            contact_name:
+              type: string
+              description: Full name of the contact person
+              required: true
+
+            contact_email:
+              type: string
+              format: email
+              description: Email address
+              required: true
+
+            contact_phone:
+              type: string
+              description: Phone number with country code
+              required: true
+
+            contact_address:
+              type: string
+              description: Contact's address
+              required: false
+
+            contact_city:
+              type: string
+              description: Contact's city
+              required: false
+
+            contact_state:
+              type: string
+              description: Contact's state or province
+              required: false
+
+            contact_postal_code:
+              type: string
+              description: Contact's postal code
+              required: false
+
+            contact_country:
+              type: string
+              description: Contact's country
+              required: false
+
+            is_point_of_contact:
+              type: boolean
+              description: Whether this is the primary point of contact
+              required: false
+              default: false
+
+            contact_type:
+              type: string
+              description: Type or role of the contact
+              required: true
+              allowed_values:
+                - admin
+                - manager
+                - operations
+                - support
+                - technical
+
+      bank_accounts:
+        type: list
+        description: Bank accounts of the host. Can have multiple bank details.
+        required: false
+        items:
+          type: object
+          properties:
+            bank_id:
+              type: string
+              description: Unique identifier for the bank account
+              required: false
+
+            bank_name:
+              type: string
+              description: Name of the bank
+              required: true
+
+            bank_account_number:
+              type: string
+              description: Bank account number
+              required: true
+              encrypted: true
+
+            bank_account_name:
+              type: string
+              description: Name on the bank account
+              required: true
+
+            bank_account_routing_number:
+              type: string
+              description: Bank routing number
+              required: false
+
+            bank_account_swift_code:
+              type: string
+              description: SWIFT/BIC code for international transfers
+              required: false
+
+            bank_account_iban:
+              type: string
+              description: International Bank Account Number
+              required: false
+
+            bank_account_bic:
+              type: string
+              description: Bank Identifier Code
+              required: false
+
+            bank_account_currency:
+              type: string
+              format: ISO 4217
+              description: Currency code (e.g., USD, EUR, GBP)
+              required: true
+
+            is_default:
+              type: boolean
+              description: Whether this is the default bank account
+              required: false
+              default: false
+
+            is_verified:
+              type: boolean
+              description: Whether the bank account has been verified
+              required: false
+              default: false
+
+            is_sepa_compliant:
+              type: boolean
+              description: Whether the account is SEPA compliant (for EU)
+              required: false
+              default: false
+
+      target_audience_age_group:
+        type: string
+        description: Primary age group of the target audience
+        required: false
+        allowed_values:
+          - 0-5
+          - 6-12
+          - 13-18
+          - 19-35
+          - 36-55
+          - 55+
+
+      devices:
+        type: list
+        description: Devices managed by the host. Can have multiple devices.
+        required: true
+        items:
+          type: object
+          properties:
+            device_id:
+              type: string
+              description: Unique identifier for the device
+              required: true
+
+            device_type:
+              type: string
+              description: Type of device installation location
+              required: true
+              allowed_values:
+                - shop
+                - car
+                - house
+
+            device_rating:
+              type: string
+              description: Classification or rating of the device quality
+              required: true
+              allowed_values:
+                - economy
+                - standard
+                - premium
+                - luxury
+
+            avg_idle_time:
+              type: integer
+              description: Average idle time in minutes (multiple of 5)
+              required: true
+              validation: Must be a multiple of 5
+
+            avg_visitors_count:
+              type: integer
+              description: Average number of visitors per day
+              required: true
+              minimum: 0
+
+            display_size:
+              type: string
+              description: Size classification of the display
+              required: true
+              allowed_values:
+                - s
+                - m
+                - l
+                - xl
+                - xxl
+
+            location:
+              type: object
+              description: Geographic location of the device
+              required: true
+              properties:
+                address_line_1:
+                  type: string
+                  description: Primary address line
+                  required: true
+
+                address_line_2:
+                  type: string
+                  description: Secondary address line
+                  required: false
+
+                city:
+                  type: string
+                  description: City name
+                  required: true
+
+                state:
+                  type: string
+                  description: State or province
+                  required: true
+
+                postal_code:
+                  type: string
+                  description: Postal or ZIP code
+                  required: true
+
+                country:
+                  type: string
+                  description: Country name or code
+                  required: true
+
+                coordinates:
+                  type: object
+                  description: Geographic coordinates
+                  required: true
+                  properties:
+                    latitude:
+                      type: number
+                      description: Latitude coordinate
+                    longitude:
+                      type: number
+                      description: Longitude coordinate
+
+                timezone:
+                  type: string
+                  description: Timezone identifier
+                  required: true
 
 
   metadata:
