@@ -230,6 +230,24 @@ actors:
               required: false
               default: false
 
+
+  host:
+    name,
+    bank:
+    contacts:
+    address:
+    target_audience_age_group: (0-5, 6-12, 13-18, 19-35, 36-55, 55+)
+    
+    devices:
+      id
+      type: (shop, car, house)
+      rating: (economy, standard, premium, luxary)
+      avg_idle_time: multiple of 5 minutes
+      avg_visitors_count:
+      display size: (s, m, l , xl, xxl)
+      location:
+
+
   metadata:
     version: 1.0.0
     last_updated: 2026-02-06

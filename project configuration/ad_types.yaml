@@ -19,7 +19,8 @@ ad_types:
             postcodes:
               type: list
               description: Target postcodes within each city
-
+      target_audience_age_group: (0-5, 6-12, 13-18, 19-35, 36-55, 55+)
+      
     ad_content:
       media_type:
         type: single
@@ -194,6 +195,7 @@ ad_types:
             postcodes:
               type: list
               description: Target postcodes within each city
+      target_audience_age_group: (0-5, 6-12, 13-18, 19-35, 36-55, 55+)
 
     ad_content:
       media_type:
@@ -209,7 +211,9 @@ ad_types:
           - events
           - breaking_news
           - alerts
-
+      media_content:
+        type: string
+        description: image/video urls; rich text; html as text; rss, events, news, alert as text
       ad_impression_duration:
         type: object
         description: Duration for which the ad should be displayed

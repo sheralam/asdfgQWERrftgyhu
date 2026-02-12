@@ -1,0 +1,1040 @@
+---
+# Backend API Endpoint Configuration for Car Infotainment Ads
+# This file defines the API endpoint for retrieving ads based on device and location
+
+api_configuration:
+  name: Ads Retrieval API
+  version: 1.0.0
+  description: >-
+    Backend API endpoint that retrieves relevant advertisements based on device information
+    and optional location data. Returns ads with their associated campaign information.
+
+  endpoint:
+    path: /api/v1/ads
+    method: GET
+    description: Retrieve ads based on device ID and optional location
+
+    request:
+      parameters:
+        device_id:
+          type: string
+          required: true
+          location: query
+          description: Unique identifier for the device requesting ads
+          example: "device_abc123xyz"
+          validation:
+            min_length: 1
+            max_length: 255
+            pattern: "^[a-zA-Z0-9_-]+$"
+
+        location:
+          type: object
+          required: false
+          location: query
+          description: Optional geographical location of the device as a point with longitude and latitude
+          properties:
+            longitude:
+              type: number
+              format: float
+              required: true
+              description: Longitude coordinate
+              example: -122.4194
+              validation:
+                min: -180
+                max: 180
+
+            latitude:
+              type: number
+              format: float
+              required: true
+              description: Latitude coordinate
+              example: 37.7749
+              validation:
+                min: -90
+                max: 90
+
+          example: "location[longitude]=-122.4194&location[latitude]=37.7749"
+
+    response:
+      status_code: 200
+      content_type: application/json
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+            description: Indicates if the request was successful
+            example: true
+
+          data:
+            type: object
+            description: All fields are optional and may not be present in the response
+            properties:
+              device_id:
+                type: string
+                required: false
+                description: Echo of the requested device ID
+
+              location:
+                type: object
+                required: false
+                description: Echo of the provided location (if any)
+                properties:
+                  longitude:
+                    type: number
+                    format: float
+                  latitude:
+                    type: number
+                    format: float
+
+              top_bar_ad:
+                type: object
+                required: false
+                description: Single ad object for top bar position (image_only_ad)
+                properties:
+                  ad_id:
+                    type: string
+                    required: false
+                    description: Unique identifier for the ad
+
+                  ad_name:
+                    type: string
+                    required: false
+                    description: Name of the ad
+
+                  ad_type:
+                    type: string
+                    required: false
+                    description: Type of ad (image_only_ad)
+                    example: "image_only_ad"
+
+                  ad_description:
+                    type: string
+                    required: false
+                    description: Description of the ad
+
+                  ad_content:
+                    type: object
+                    required: false
+                    description: Content details for the ad
+                    properties:
+                      media_type:
+                        type: string
+                        required: false
+                        description: Type of media content
+                      media_content:
+                        type: string
+                        required: false
+                        description: URL or text content for the ad
+                      ad_impression:
+                        type: object
+                        required: false
+                        description: Ad impression settings and limits
+                        properties:
+                          ad_impression_duration:
+                            type: object
+                            required: false
+                            description: Duration for which the ad should be displayed
+                            properties:
+                              value:
+                                type: number
+                                required: false
+                              unit:
+                                type: string
+                                required: false
+                          alloted_max_impression_count:
+                            type: integer
+                            format: int64
+                            required: false
+                            description: Maximum number of impressions allotted for this ad
+                      ad_advertiser_forwarding_url:
+                        type: string
+                        required: false
+                        format: url
+
+                  ad_status:
+                    type: string
+                    required: false
+                    description: Current status of the ad
+                    allowed_values:
+                      - active
+                      - inactive
+                      - paused
+                      - draft
+                      - expired
+
+                  ad_start_date:
+                    type: string
+                    required: false
+                    format: date
+                    description: When the ad becomes active
+
+                  ad_end_date:
+                    type: string
+                    required: false
+                    format: date
+                    description: When the ad expires
+
+                  campaign:
+                    type: object
+                    required: false
+                    description: Campaign information associated with this ad
+                    properties:
+                      campaign_id:
+                        type: string
+                        required: false
+                        description: Unique identifier for the campaign
+
+                      campaign_name:
+                        type: string
+                        required: false
+                        description: Name of the campaign
+
+                      campaign_description:
+                        type: string
+                        required: false
+                        description: Description of the campaign
+
+                      campaign_status:
+                        type: string
+                        required: false
+                        description: Current status of the campaign
+                        allowed_values:
+                          - active
+                          - inactive
+                          - paused
+                          - draft
+                          - expired
+
+                      campaign_start_date:
+                        type: string
+                        required: false
+                        format: date
+
+                      campaign_end_date:
+                        type: string
+                        required: false
+                        format: date
+
+                      advertiser:
+                        type: object
+                        required: false
+                        description: Advertiser information
+                        properties:
+                          advertiser_id:
+                            type: string
+                            required: false
+                          advertiser_name:
+                            type: string
+                            required: false
+
+                      audience:
+                        type: object
+                        required: false
+                        description: Target audience for the campaign
+                        properties:
+                          region:
+                            type: string
+                            required: false
+                          country:
+                            type: string
+                            required: false
+                          cities:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+                          postcodes:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+
+              bottom_left_ad:
+                type: object
+                required: false
+                description: Single ad object for bottom left position (image_only_ad)
+                properties:
+                  ad_id:
+                    type: string
+                    required: false
+                  ad_name:
+                    type: string
+                    required: false
+                  ad_type:
+                    type: string
+                    required: false
+                    example: "image_only_ad"
+                  ad_description:
+                    type: string
+                    required: false
+                  ad_content:
+                    type: object
+                    required: false
+                    properties:
+                      media_type:
+                        type: string
+                        required: false
+                      media_content:
+                        type: string
+                        required: false
+                      ad_impression:
+                        type: object
+                        required: false
+                        description: Ad impression settings and limits
+                        properties:
+                          ad_impression_duration:
+                            type: object
+                            required: false
+                            description: Duration for which the ad should be displayed
+                            properties:
+                              value:
+                                type: number
+                                required: false
+                              unit:
+                                type: string
+                                required: false
+                          alloted_max_impression_count:
+                            type: integer
+                            format: int64
+                            required: false
+                            description: Maximum number of impressions allotted for this ad
+                      ad_advertiser_forwarding_url:
+                        type: string
+                        required: false
+                        format: url
+                  ad_status:
+                    type: string
+                    required: false
+                  ad_start_date:
+                    type: string
+                    required: false
+                    format: date
+                  ad_end_date:
+                    type: string
+                    required: false
+                    format: date
+                  campaign:
+                    type: object
+                    required: false
+                    properties:
+                      campaign_id:
+                        type: string
+                        required: false
+                      campaign_name:
+                        type: string
+                        required: false
+                      campaign_description:
+                        type: string
+                        required: false
+                      campaign_status:
+                        type: string
+                        required: false
+                      campaign_start_date:
+                        type: string
+                        required: false
+                        format: date
+                      campaign_end_date:
+                        type: string
+                        required: false
+                        format: date
+                      advertiser:
+                        type: object
+                        required: false
+                        properties:
+                          advertiser_id:
+                            type: string
+                            required: false
+                          advertiser_name:
+                            type: string
+                            required: false
+                      audience:
+                        type: object
+                        required: false
+                        properties:
+                          region:
+                            type: string
+                            required: false
+                          country:
+                            type: string
+                            required: false
+                          cities:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+                          postcodes:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+
+              bottom_right_ad:
+                type: object
+                required: false
+                description: Single ad object for bottom right position (image_only_ad)
+                properties:
+                  ad_id:
+                    type: string
+                    required: false
+                  ad_name:
+                    type: string
+                    required: false
+                  ad_type:
+                    type: string
+                    required: false
+                    example: "image_only_ad"
+                  ad_description:
+                    type: string
+                    required: false
+                  ad_content:
+                    type: object
+                    required: false
+                    properties:
+                      media_type:
+                        type: string
+                        required: false
+                      media_content:
+                        type: string
+                        required: false
+                      ad_impression:
+                        type: object
+                        required: false
+                        description: Ad impression settings and limits
+                        properties:
+                          ad_impression_duration:
+                            type: object
+                            required: false
+                            description: Duration for which the ad should be displayed
+                            properties:
+                              value:
+                                type: number
+                                required: false
+                              unit:
+                                type: string
+                                required: false
+                          alloted_max_impression_count:
+                            type: integer
+                            format: int64
+                            required: false
+                            description: Maximum number of impressions allotted for this ad
+                      ad_advertiser_forwarding_url:
+                        type: string
+                        required: false
+                        format: url
+                  ad_status:
+                    type: string
+                    required: false
+                  ad_start_date:
+                    type: string
+                    required: false
+                    format: date
+                  ad_end_date:
+                    type: string
+                    required: false
+                    format: date
+                  campaign:
+                    type: object
+                    required: false
+                    properties:
+                      campaign_id:
+                        type: string
+                        required: false
+                      campaign_name:
+                        type: string
+                        required: false
+                      campaign_description:
+                        type: string
+                        required: false
+                      campaign_status:
+                        type: string
+                        required: false
+                      campaign_start_date:
+                        type: string
+                        required: false
+                        format: date
+                      campaign_end_date:
+                        type: string
+                        required: false
+                        format: date
+                      advertiser:
+                        type: object
+                        required: false
+                        properties:
+                          advertiser_id:
+                            type: string
+                            required: false
+                          advertiser_name:
+                            type: string
+                            required: false
+                      audience:
+                        type: object
+                        required: false
+                        properties:
+                          region:
+                            type: string
+                            required: false
+                          country:
+                            type: string
+                            required: false
+                          cities:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+                          postcodes:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+
+              bottom_center_ad:
+                type: object
+                required: false
+                description: Single ad object for bottom center position (image_only_ad)
+                properties:
+                  ad_id:
+                    type: string
+                    required: false
+                  ad_name:
+                    type: string
+                    required: false
+                  ad_type:
+                    type: string
+                    required: false
+                    example: "image_only_ad"
+                  ad_description:
+                    type: string
+                    required: false
+                  ad_content:
+                    type: object
+                    required: false
+                    properties:
+                      media_type:
+                        type: string
+                        required: false
+                      media_content:
+                        type: string
+                        required: false
+                      ad_impression:
+                        type: object
+                        required: false
+                        description: Ad impression settings and limits
+                        properties:
+                          ad_impression_duration:
+                            type: object
+                            required: false
+                            description: Duration for which the ad should be displayed
+                            properties:
+                              value:
+                                type: number
+                                required: false
+                              unit:
+                                type: string
+                                required: false
+                          alloted_max_impression_count:
+                            type: integer
+                            format: int64
+                            required: false
+                            description: Maximum number of impressions allotted for this ad
+                      ad_advertiser_forwarding_url:
+                        type: string
+                        required: false
+                        format: url
+                  ad_status:
+                    type: string
+                    required: false
+                  ad_start_date:
+                    type: string
+                    required: false
+                    format: date
+                  ad_end_date:
+                    type: string
+                    required: false
+                    format: date
+                  campaign:
+                    type: object
+                    required: false
+                    properties:
+                      campaign_id:
+                        type: string
+                        required: false
+                      campaign_name:
+                        type: string
+                        required: false
+                      campaign_description:
+                        type: string
+                        required: false
+                      campaign_status:
+                        type: string
+                        required: false
+                      campaign_start_date:
+                        type: string
+                        required: false
+                        format: date
+                      campaign_end_date:
+                        type: string
+                        required: false
+                        format: date
+                      advertiser:
+                        type: object
+                        required: false
+                        properties:
+                          advertiser_id:
+                            type: string
+                            required: false
+                          advertiser_name:
+                            type: string
+                            required: false
+                      audience:
+                        type: object
+                        required: false
+                        properties:
+                          region:
+                            type: string
+                            required: false
+                          country:
+                            type: string
+                            required: false
+                          cities:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+                          postcodes:
+                            type: array
+                            required: false
+                            items:
+                              type: string
+
+              center_right_content_ad:
+                type: array
+                required: false
+                description: List of ad objects for center right content position (multimedia_ad)
+                items:
+                  type: object
+                  properties:
+                    ad_id:
+                      type: string
+                      required: false
+                    ad_name:
+                      type: string
+                      required: false
+                    ad_type:
+                      type: string
+                      required: false
+                      example: "multimedia_ad"
+                    ad_description:
+                      type: string
+                      required: false
+                    ad_content:
+                      type: object
+                      required: false
+                      properties:
+                        media_type:
+                          type: string
+                          required: false
+                          description: Can be text, image, video, html, gif, news_rss, events, breaking_news, alerts
+                        media_content:
+                          type: string
+                          required: false
+                        ad_impression_duration:
+                          type: object
+                          required: false
+                          properties:
+                            value:
+                              type: number
+                              required: false
+                            unit:
+                              type: string
+                              required: false
+                        ad_advertiser_forwarding_url:
+                          type: string
+                          required: false
+                          format: url
+                    ad_status:
+                      type: string
+                      required: false
+                    ad_start_date:
+                      type: string
+                      required: false
+                      format: date
+                    ad_end_date:
+                      type: string
+                      required: false
+                      format: date
+                    campaign:
+                      type: object
+                      required: false
+                      properties:
+                        campaign_id:
+                          type: string
+                          required: false
+                        campaign_name:
+                          type: string
+                          required: false
+                        campaign_description:
+                          type: string
+                          required: false
+                        campaign_status:
+                          type: string
+                          required: false
+                        campaign_start_date:
+                          type: string
+                          required: false
+                          format: date
+                        campaign_end_date:
+                          type: string
+                          required: false
+                          format: date
+                        advertiser:
+                          type: object
+                          required: false
+                          properties:
+                            advertiser_id:
+                              type: string
+                              required: false
+                            advertiser_name:
+                              type: string
+                              required: false
+                        audience:
+                          type: object
+                          required: false
+                          properties:
+                            region:
+                              type: string
+                              required: false
+                            country:
+                              type: string
+                              required: false
+                            cities:
+                              type: array
+                              required: false
+                              items:
+                                type: string
+                            postcodes:
+                              type: array
+                              required: false
+                              items:
+                                type: string
+
+              center_left_content_ad:
+                type: array
+                required: false
+                description: List of ad objects for center left content position (multimedia_ad)
+                items:
+                  type: object
+                  properties:
+                    ad_id:
+                      type: string
+                      required: false
+                    ad_name:
+                      type: string
+                      required: false
+                    ad_type:
+                      type: string
+                      required: false
+                      example: "multimedia_ad"
+                    ad_description:
+                      type: string
+                      required: false
+                    ad_content:
+                      type: object
+                      required: false
+                      properties:
+                        media_type:
+                          type: string
+                          required: false
+                          description: Can be text, image, video, html, gif, news_rss, events, breaking_news, alerts
+                        media_content:
+                          type: string
+                          required: false
+                        ad_impression_duration:
+                          type: object
+                          required: false
+                          properties:
+                            value:
+                              type: number
+                              required: false
+                            unit:
+                              type: string
+                              required: false
+                        ad_advertiser_forwarding_url:
+                          type: string
+                          required: false
+                          format: url
+                    ad_status:
+                      type: string
+                      required: false
+                    ad_start_date:
+                      type: string
+                      required: false
+                      format: date
+                    ad_end_date:
+                      type: string
+                      required: false
+                      format: date
+                    campaign:
+                      type: object
+                      required: false
+                      properties:
+                        campaign_id:
+                          type: string
+                          required: false
+                        campaign_name:
+                          type: string
+                          required: false
+                        campaign_description:
+                          type: string
+                          required: false
+                        campaign_status:
+                          type: string
+                          required: false
+                        campaign_start_date:
+                          type: string
+                          required: false
+                          format: date
+                        campaign_end_date:
+                          type: string
+                          required: false
+                          format: date
+                        advertiser:
+                          type: object
+                          required: false
+                          properties:
+                            advertiser_id:
+                              type: string
+                              required: false
+                            advertiser_name:
+                              type: string
+                              required: false
+                        audience:
+                          type: object
+                          required: false
+                          properties:
+                            region:
+                              type: string
+                              required: false
+                            country:
+                              type: string
+                              required: false
+                            cities:
+                              type: array
+                              required: false
+                              items:
+                                type: string
+                            postcodes:
+                              type: array
+                              required: false
+                              items:
+                                type: string
+
+          metadata:
+            type: object
+            required: false
+            description: Response metadata
+            properties:
+              total_ad_positions:
+                type: integer
+                required: false
+                description: Total number of ad positions populated
+
+              timestamp:
+                type: string
+                required: false
+                format: datetime
+                description: Timestamp of the response
+
+      example:
+        success: true
+        data:
+          device_id: "device_abc123xyz"
+          location:
+            longitude: -122.4194
+            latitude: 37.7749
+          top_bar_ad:
+            ad_id: "ad_001"
+            ad_name: "Spring Sale Banner"
+            ad_type: "image_only_ad"
+            ad_description: "Promotional banner for spring sale"
+            ad_content:
+              media_type: "image"
+              media_content: "https://cdn.example.com/ads/spring-sale.jpg"
+              ad_impression:
+                ad_impression_duration:
+                  value: 15
+                  unit: "seconds"
+                alloted_max_impression_count: 10000
+              ad_advertiser_forwarding_url: "https://advertiser.com/spring-sale"
+            ad_status: "active"
+            ad_start_date: "2026-03-01"
+            ad_end_date: "2026-03-31"
+            campaign:
+              campaign_id: "camp_001"
+              campaign_name: "Spring 2026 Campaign"
+              campaign_description: "Quarterly spring promotional campaign"
+              campaign_status: "active"
+              campaign_start_date: "2026-03-01"
+              campaign_end_date: "2026-03-31"
+              advertiser:
+                advertiser_id: "adv_001"
+                advertiser_name: "Local Business Inc"
+              audience:
+                region: "North America"
+                country: "USA"
+                cities: ["San Francisco", "San Jose"]
+                postcodes: ["94102", "94103"]
+          bottom_left_ad:
+            ad_id: "ad_002"
+            ad_name: "Weekend Special"
+            ad_type: "image_only_ad"
+            ad_content:
+              media_type: "gif"
+              media_content: "https://cdn.example.com/ads/weekend-special.gif"
+              ad_impression:
+                ad_impression_duration:
+                  value: 20
+                  unit: "seconds"
+                alloted_max_impression_count: 5000
+            ad_status: "active"
+            campaign:
+              campaign_id: "camp_002"
+              campaign_name: "Weekend Deals"
+          bottom_right_ad:
+            ad_id: "ad_003"
+            ad_name: "Limited Offer"
+            ad_type: "image_only_ad"
+            ad_status: "active"
+          center_right_content_ad:
+            - ad_id: "ad_004"
+              ad_name: "Breaking News Update"
+              ad_type: "multimedia_ad"
+              ad_content:
+                media_type: "breaking_news"
+                media_content: "Major traffic update on Highway 101"
+                ad_impression:
+                  ad_impression_duration:
+                    value: 30
+                    unit: "seconds"
+                  alloted_max_impression_count: 50000
+              ad_status: "active"
+              campaign:
+                campaign_id: "camp_003"
+                campaign_name: "Traffic Alerts"
+            - ad_id: "ad_005"
+              ad_name: "Video Advertisement"
+              ad_type: "multimedia_ad"
+              ad_content:
+                media_type: "video"
+                media_content: "https://cdn.example.com/ads/promo-video.mp4"
+                ad_impression:
+                  ad_impression_duration:
+                    value: 45
+                    unit: "seconds"
+                  alloted_max_impression_count: 8000
+              ad_status: "active"
+          center_left_content_ad:
+            - ad_id: "ad_006"
+              ad_name: "News Feed"
+              ad_type: "multimedia_ad"
+              ad_content:
+                media_type: "news_rss"
+                media_content: "https://news.example.com/rss/local"
+                ad_impression:
+                  ad_impression_duration:
+                    value: 60
+                    unit: "seconds"
+                  alloted_max_impression_count: 20000
+              ad_status: "active"
+        metadata:
+          total_ad_positions: 5
+          timestamp: "2026-02-12T10:30:00Z"
+
+    error_responses:
+      - status_code: 400
+        description: Bad Request - Invalid device_id or location parameters
+        example:
+          success: false
+          error:
+            code: "INVALID_PARAMETERS"
+            message: "device_id is required and must be a valid string"
+
+      - status_code: 404
+        description: Not Found - No ads available for the given parameters
+        example:
+          success: false
+          error:
+            code: "NO_ADS_FOUND"
+            message: "No ads available for the specified device and location"
+
+      - status_code: 500
+        description: Internal Server Error
+        example:
+          success: false
+          error:
+            code: "INTERNAL_ERROR"
+            message: "An error occurred while processing your request"
+
+  business_logic:
+    description: Backend processing logic for ad selection and response formatting
+    steps:
+      - step: 1
+        action: Validate device_id
+        description: Ensure device_id is provided and meets validation criteria
+
+      - step: 2
+        action: Parse location (if provided)
+        description: Extract and validate longitude and latitude coordinates
+
+      - step: 3
+        action: Query active campaigns
+        description: Retrieve all active campaigns based on current date
+
+      - step: 4
+        action: Filter by location
+        description: If location is provided, filter campaigns by audience region/country/city/postcode
+
+      - step: 5
+        action: Retrieve associated ads
+        description: Get all active ads for the filtered campaigns
+
+      - step: 6
+        action: Apply ad targeting rules
+        description: Apply time slots, view count limits, and other targeting criteria
+
+      - step: 7
+        action: Prioritize and group ads by position
+        description: >-
+          Group ads by their position. For image_only_ad positions (top_bar_ad, bottom_left_ad,
+          bottom_right_ad, bottom_center_ad), select one ad per position. For multimedia_ad
+          positions (center_right_content_ad, center_left_content_ad), collect multiple ads as arrays.
+
+      - step: 8
+        action: Format response structure
+        description: >-
+          Build response with ads organized by position:
+          - top_bar_ad: single object (optional)
+          - bottom_left_ad: single object (optional)
+          - bottom_right_ad: single object (optional)
+          - bottom_center_ad: single object (optional)
+          - center_right_content_ad: array of objects (optional)
+          - center_left_content_ad: array of objects (optional)
+
+      - step: 9
+        action: Return response
+        description: Return formatted response with all fields marked as optional
+
+  notes:
+    - All response fields are optional and may not be present
+    - All date fields should be in ISO 8601 format
+    - The API should respect ad time slots (15-minute intervals) defined in ad_types.yaml
+    - Four positions return single objects (top_bar_ad, bottom_left_ad, bottom_right_ad, bottom_center_ad)
+    - Two positions return arrays (center_right_content_ad, center_left_content_ad)
+    - Location-based filtering should match against campaign audience targeting
+    - Only ads with status "active" and within their date range should be returned
+    - Campaign information should be fully populated for each ad when available
+
+  metadata:
+    version: 1.0.0
+    last_updated: 2026-02-12
+    purpose: API endpoint specification for retrieving car infotainment ads
