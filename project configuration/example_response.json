@@ -7,13 +7,13 @@
       "latitude": 37.7749
     },
     "top_bar_ad": {
-      "ad_id": "ad_001",
-      "ad_name": "Spring Sale Banner",
+      "ad_id": "ad_top_001",
+      "ad_name": "Spring Sale Top Banner",
       "ad_type": "image_only_ad",
-      "ad_description": "Promotional banner for spring sale event",
+      "ad_description": "Exclusive spring collection sale - Up to 50% off on selected items",
       "ad_content": {
         "media_type": "image",
-        "media_content": "https://cdn.example.com/ads/spring-sale-banner.jpg",
+        "media_content": "https://cdn.example.com/ads/spring-sale-banner-2026.jpg",
         "ad_impression": {
           "ad_impression_duration": {
             "value": 15,
@@ -27,32 +27,32 @@
       "ad_start_date": "2026-03-01",
       "ad_end_date": "2026-03-31",
       "campaign": {
-        "campaign_id": "camp_001",
-        "campaign_name": "Spring 2026 Campaign",
-        "campaign_description": "Quarterly spring promotional campaign",
+        "campaign_id": "camp_spring_001",
+        "campaign_name": "Spring 2026 Promotional Campaign",
+        "campaign_description": "Major quarterly spring sale campaign targeting Bay Area customers",
         "campaign_status": "active",
         "campaign_start_date": "2026-03-01",
         "campaign_end_date": "2026-03-31",
         "advertiser": {
-          "advertiser_id": "adv_001",
-          "advertiser_name": "Local Business Inc"
+          "advertiser_id": "adv_retail_001",
+          "advertiser_name": "Bay Area Retail Inc"
         },
         "audience": {
           "region": "North America",
           "country": "USA",
-          "cities": ["San Francisco", "San Jose"],
-          "postcodes": ["94102", "94103", "94104"]
+          "cities": ["San Francisco", "San Jose", "Oakland"],
+          "postcodes": ["94102", "94103", "94104", "94105"]
         }
       }
     },
     "bottom_left_ad": {
-      "ad_id": "ad_002",
-      "ad_name": "Weekend Special",
+      "ad_id": "ad_bl_002",
+      "ad_name": "Weekend Flash Deal",
       "ad_type": "image_only_ad",
-      "ad_description": "Limited time weekend offer",
+      "ad_description": "Limited time weekend offer - This weekend only",
       "ad_content": {
         "media_type": "gif",
-        "media_content": "https://cdn.example.com/ads/weekend-special.gif",
+        "media_content": "https://cdn.example.com/ads/weekend-flash-animated.gif",
         "ad_impression": {
           "ad_impression_duration": {
             "value": 20,
@@ -60,38 +60,38 @@
           },
           "alloted_max_impression_count": 5000
         },
-        "ad_advertiser_forwarding_url": "https://retailer.com/weekend-deals"
+        "ad_advertiser_forwarding_url": "https://retailer.com/weekend-flash-deals"
       },
       "ad_status": "active",
       "ad_start_date": "2026-02-13",
       "ad_end_date": "2026-02-16",
       "campaign": {
-        "campaign_id": "camp_002",
-        "campaign_name": "Weekend Deals",
-        "campaign_description": "Weekend promotional campaign",
+        "campaign_id": "camp_weekend_002",
+        "campaign_name": "Weekend Flash Deals Campaign",
+        "campaign_description": "Weekend-only promotional campaign with limited-time offers",
         "campaign_status": "active",
         "campaign_start_date": "2026-02-01",
         "campaign_end_date": "2026-02-28",
         "advertiser": {
-          "advertiser_id": "adv_002",
-          "advertiser_name": "Retail Store Chain"
+          "advertiser_id": "adv_retail_002",
+          "advertiser_name": "Super Store Chain"
         },
         "audience": {
           "region": "North America",
           "country": "USA",
-          "cities": ["San Francisco"],
-          "postcodes": ["94102"]
+          "cities": ["San Francisco", "Oakland"],
+          "postcodes": ["94102", "94103"]
         }
       }
     },
     "bottom_right_ad": {
-      "ad_id": "ad_003",
-      "ad_name": "Limited Offer Badge",
+      "ad_id": "ad_br_003",
+      "ad_name": "Flash Sale Badge",
       "ad_type": "image_only_ad",
-      "ad_description": "Flash sale notification",
+      "ad_description": "Today only - Flash sale notification badge",
       "ad_content": {
         "media_type": "image",
-        "media_content": "https://cdn.example.com/ads/limited-offer.png",
+        "media_content": "https://cdn.example.com/ads/flash-sale-badge.png",
         "ad_impression": {
           "ad_impression_duration": {
             "value": 10,
@@ -99,38 +99,38 @@
           },
           "alloted_max_impression_count": 3000
         },
-        "ad_advertiser_forwarding_url": "https://shop.example.com/flash-sale"
+        "ad_advertiser_forwarding_url": "https://shop.example.com/flash-sale-today"
       },
       "ad_status": "active",
       "ad_start_date": "2026-02-12",
       "ad_end_date": "2026-02-12",
       "campaign": {
-        "campaign_id": "camp_003",
-        "campaign_name": "Flash Sale Campaign",
-        "campaign_description": "Daily flash sale notifications",
+        "campaign_id": "camp_flash_003",
+        "campaign_name": "Daily Flash Sale Campaign",
+        "campaign_description": "Daily flash sale notifications to drive immediate purchases",
         "campaign_status": "active",
         "campaign_start_date": "2026-02-01",
         "campaign_end_date": "2026-02-28",
         "advertiser": {
-          "advertiser_id": "adv_003",
-          "advertiser_name": "E-commerce Platform"
+          "advertiser_id": "adv_ecom_003",
+          "advertiser_name": "E-Shop Platform"
         },
         "audience": {
           "region": "North America",
           "country": "USA",
-          "cities": ["San Francisco", "Oakland", "San Jose"],
+          "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley"],
           "postcodes": []
         }
       }
     },
     "bottom_center_ad": {
-      "ad_id": "ad_004",
-      "ad_name": "Call to Action",
+      "ad_id": "ad_bc_004",
+      "ad_name": "Subscribe CTA Banner",
       "ad_type": "image_only_ad",
-      "ad_description": "Subscribe now banner",
+      "ad_description": "New subscriber offer - Get 20% off your first order",
       "ad_content": {
         "media_type": "text",
-        "media_content": "Subscribe today and get 20% off your first purchase!",
+        "media_content": "Subscribe today and get 20% off your first purchase! Plus free shipping on orders over $50.",
         "ad_impression": {
           "ad_impression_duration": {
             "value": 25,
@@ -138,39 +138,39 @@
           },
           "alloted_max_impression_count": 15000
         },
-        "ad_advertiser_forwarding_url": "https://subscribe.example.com/signup"
+        "ad_advertiser_forwarding_url": "https://subscribe.example.com/signup-offer"
       },
       "ad_status": "active",
       "ad_start_date": "2026-02-01",
       "ad_end_date": "2026-03-31",
       "campaign": {
-        "campaign_id": "camp_004",
+        "campaign_id": "camp_subscribe_004",
         "campaign_name": "Subscription Drive Q1 2026",
-        "campaign_description": "New subscriber acquisition campaign",
+        "campaign_description": "New subscriber acquisition campaign with special incentives",
         "campaign_status": "active",
         "campaign_start_date": "2026-02-01",
         "campaign_end_date": "2026-03-31",
         "advertiser": {
-          "advertiser_id": "adv_004",
-          "advertiser_name": "Subscription Service Co"
+          "advertiser_id": "adv_service_004",
+          "advertiser_name": "Premium Subscription Services"
         },
         "audience": {
           "region": "North America",
           "country": "USA",
-          "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley"],
-          "postcodes": ["94102", "94103", "94104", "94105"]
+          "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley", "Palo Alto"],
+          "postcodes": ["94102", "94103", "94104", "94105", "94107"]
         }
       }
     },
     "center_right_content_ad": [
       {
-        "ad_id": "ad_005",
-        "ad_name": "Breaking News Update",
+        "ad_id": "ad_crc_005",
+        "ad_name": "Highway 101 Traffic Alert",
         "ad_type": "multimedia_ad",
-        "ad_description": "Real-time traffic alert",
+        "ad_description": "Breaking traffic news for Highway 101 commuters",
         "ad_content": {
           "media_type": "breaking_news",
-          "media_content": "Major traffic incident on Highway 101 Southbound near San Francisco. Expect delays of 30+ minutes. Use alternate routes.",
+          "media_content": "⚠️ TRAFFIC ALERT: Major incident on Highway 101 Southbound near San Francisco exits. Expect delays of 30+ minutes. Alternative routes recommended via I-280 or US-101 Express Lanes.",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 30,
@@ -183,32 +183,32 @@
         "ad_start_date": "2026-02-12",
         "ad_end_date": "2026-02-12",
         "campaign": {
-          "campaign_id": "camp_005",
-          "campaign_name": "Traffic Alerts Service",
-          "campaign_description": "Real-time traffic and road condition alerts",
+          "campaign_id": "camp_traffic_005",
+          "campaign_name": "Real-Time Traffic Alerts 2026",
+          "campaign_description": "Live traffic updates and road condition alerts for Bay Area drivers",
           "campaign_status": "active",
           "campaign_start_date": "2026-01-01",
           "campaign_end_date": "2026-12-31",
           "advertiser": {
-            "advertiser_id": "adv_005",
-            "advertiser_name": "City Traffic Authority"
+            "advertiser_id": "adv_city_005",
+            "advertiser_name": "Bay Area Transportation Authority"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
-            "cities": ["San Francisco", "San Jose", "Oakland"],
+            "cities": ["San Francisco", "San Jose", "Oakland", "Daly City"],
             "postcodes": []
           }
         }
       },
       {
-        "ad_id": "ad_006",
-        "ad_name": "Promotional Video",
+        "ad_id": "ad_crc_006",
+        "ad_name": "New Car Technology Features",
         "ad_type": "multimedia_ad",
-        "ad_description": "New car features showcase",
+        "ad_description": "Video showcasing latest automotive technology innovations",
         "ad_content": {
           "media_type": "video",
-          "media_content": "https://cdn.example.com/ads/car-features-promo.mp4",
+          "media_content": "https://cdn.example.com/ads/car-tech-features-2026.mp4",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 45,
@@ -216,38 +216,38 @@
             },
             "alloted_max_impression_count": 8000
           },
-          "ad_advertiser_forwarding_url": "https://automotive.example.com/new-features"
+          "ad_advertiser_forwarding_url": "https://automotive.example.com/2026-features"
         },
         "ad_status": "active",
         "ad_start_date": "2026-02-01",
         "ad_end_date": "2026-02-28",
         "campaign": {
-          "campaign_id": "camp_006",
-          "campaign_name": "Automotive Features Campaign",
-          "campaign_description": "Showcase of new automotive technology features",
+          "campaign_id": "camp_autotech_006",
+          "campaign_name": "Automotive Innovation Showcase 2026",
+          "campaign_description": "Promotional campaign highlighting cutting-edge automotive technology",
           "campaign_status": "active",
           "campaign_start_date": "2026-02-01",
           "campaign_end_date": "2026-04-30",
           "advertiser": {
-            "advertiser_id": "adv_006",
-            "advertiser_name": "Auto Technology Corp"
+            "advertiser_id": "adv_auto_006",
+            "advertiser_name": "Future Auto Technologies Corp"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
-            "cities": ["San Francisco"],
+            "cities": ["San Francisco", "San Jose", "Palo Alto"],
             "postcodes": []
           }
         }
       },
       {
-        "ad_id": "ad_007",
-        "ad_name": "Weather Alert",
+        "ad_id": "ad_crc_007",
+        "ad_name": "Severe Weather Warning",
         "ad_type": "multimedia_ad",
-        "ad_description": "Severe weather warning",
+        "ad_description": "Important weather alert for Bay Area drivers",
         "ad_content": {
           "media_type": "alerts",
-          "media_content": "Heavy rain expected in the Bay Area tonight. Drive carefully and avoid flooded areas.",
+          "media_content": "🌧️ WEATHER ALERT: Heavy rain expected in the Bay Area tonight from 6 PM to 11 PM. Reduced visibility and slippery roads likely. Drive carefully, reduce speed, and avoid flooded areas. Check weather.gov for updates.",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 20,
@@ -260,34 +260,73 @@
         "ad_start_date": "2026-02-12",
         "ad_end_date": "2026-02-13",
         "campaign": {
-          "campaign_id": "camp_007",
-          "campaign_name": "Weather Advisory Service",
-          "campaign_description": "Local weather alerts and warnings",
+          "campaign_id": "camp_weather_007",
+          "campaign_name": "Weather Advisory Service 2026",
+          "campaign_description": "Critical weather alerts and safety warnings for motorists",
           "campaign_status": "active",
           "campaign_start_date": "2026-01-01",
           "campaign_end_date": "2026-12-31",
           "advertiser": {
-            "advertiser_id": "adv_007",
-            "advertiser_name": "National Weather Service"
+            "advertiser_id": "adv_gov_007",
+            "advertiser_name": "National Weather Service - Bay Area"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
-            "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley"],
+            "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley", "Fremont"],
             "postcodes": []
+          }
+        }
+      },
+      {
+        "ad_id": "ad_crc_008",
+        "ad_name": "Restaurant Promo Interactive",
+        "ad_type": "multimedia_ad",
+        "ad_description": "Interactive HTML widget for restaurant special offers",
+        "ad_content": {
+          "media_type": "html",
+          "media_content": "<div class='promo-widget' style='padding:20px;background:#ff6b35;color:white;border-radius:10px;'><h2>Today's Lunch Special! 🍔</h2><p style='font-size:18px;'>Get 25% off lunch orders between 11 AM - 2 PM</p><button style='background:white;color:#ff6b35;padding:10px 20px;border:none;border-radius:5px;'>Order Now</button></div>",
+          "ad_impression": {
+            "ad_impression_duration": {
+              "value": 30,
+              "unit": "seconds"
+            },
+            "alloted_max_impression_count": 6000
+          },
+          "ad_advertiser_forwarding_url": "https://restaurant.example.com/lunch-specials"
+        },
+        "ad_status": "active",
+        "ad_start_date": "2026-02-10",
+        "ad_end_date": "2026-02-20",
+        "campaign": {
+          "campaign_id": "camp_food_008",
+          "campaign_name": "Local Restaurant Lunch Promotion",
+          "campaign_description": "Mid-day dining promotions for local restaurants",
+          "campaign_status": "active",
+          "campaign_start_date": "2026-02-01",
+          "campaign_end_date": "2026-02-28",
+          "advertiser": {
+            "advertiser_id": "adv_food_008",
+            "advertiser_name": "Bay Area Restaurant Collective"
+          },
+          "audience": {
+            "region": "North America",
+            "country": "USA",
+            "cities": ["San Francisco"],
+            "postcodes": ["94102", "94103", "94104"]
           }
         }
       }
     ],
     "center_left_content_ad": [
       {
-        "ad_id": "ad_008",
-        "ad_name": "Local News Feed",
+        "ad_id": "ad_clc_009",
+        "ad_name": "Local Bay Area News Feed",
         "ad_type": "multimedia_ad",
-        "ad_description": "RSS feed for local news",
+        "ad_description": "Live RSS feed with latest local news and updates",
         "ad_content": {
           "media_type": "news_rss",
-          "media_content": "https://news.example.com/rss/local/bayarea",
+          "media_content": "https://news.bayarea.example.com/rss/local/breaking",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 60,
@@ -300,32 +339,32 @@
         "ad_start_date": "2026-02-01",
         "ad_end_date": "2026-02-28",
         "campaign": {
-          "campaign_id": "camp_008",
-          "campaign_name": "Local News Partnership",
-          "campaign_description": "Local news and updates feed",
+          "campaign_id": "camp_news_009",
+          "campaign_name": "Local News Partnership February 2026",
+          "campaign_description": "Real-time local news feed integration for informed drivers",
           "campaign_status": "active",
           "campaign_start_date": "2026-01-01",
           "campaign_end_date": "2026-12-31",
           "advertiser": {
-            "advertiser_id": "adv_008",
+            "advertiser_id": "adv_media_009",
             "advertiser_name": "Bay Area News Network"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
-            "cities": ["San Francisco", "San Jose", "Oakland"],
+            "cities": ["San Francisco", "San Jose", "Oakland", "Berkeley"],
             "postcodes": []
           }
         }
       },
       {
-        "ad_id": "ad_009",
+        "ad_id": "ad_clc_010",
         "ad_name": "Community Events Calendar",
         "ad_type": "multimedia_ad",
-        "ad_description": "Upcoming local events",
+        "ad_description": "Upcoming local community events and activities",
         "ad_content": {
           "media_type": "events",
-          "media_content": "Upcoming Events: Feb 15 - Street Fair on Market St | Feb 18 - Concert at Golden Gate Park | Feb 20 - Food Festival",
+          "media_content": "📅 UPCOMING EVENTS:\n\n• Feb 15 (Sat) - Outdoor Street Fair on Market Street, 10 AM - 6 PM\n• Feb 18 (Tue) - Live Concert at Golden Gate Park, 7 PM\n• Feb 20 (Thu) - Food & Wine Festival at Pier 39, 5 PM - 10 PM\n• Feb 22 (Sat) - Community Farmers Market, Ferry Building, 8 AM - 2 PM\n\nTap QR code for more details!",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 40,
@@ -333,38 +372,38 @@
             },
             "alloted_max_impression_count": 12000
           },
-          "ad_advertiser_forwarding_url": "https://events.sanfrancisco.com"
+          "ad_advertiser_forwarding_url": "https://events.sanfrancisco.gov/february"
         },
         "ad_status": "active",
         "ad_start_date": "2026-02-01",
         "ad_end_date": "2026-02-28",
         "campaign": {
-          "campaign_id": "camp_009",
+          "campaign_id": "camp_events_010",
           "campaign_name": "Community Events February 2026",
-          "campaign_description": "Local community events and activities",
+          "campaign_description": "Monthly community events and public activities calendar",
           "campaign_status": "active",
           "campaign_start_date": "2026-02-01",
           "campaign_end_date": "2026-02-28",
           "advertiser": {
-            "advertiser_id": "adv_009",
-            "advertiser_name": "San Francisco Events Department"
+            "advertiser_id": "adv_city_010",
+            "advertiser_name": "San Francisco Events & Recreation Department"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
             "cities": ["San Francisco"],
-            "postcodes": ["94102", "94103", "94104", "94105", "94107"]
+            "postcodes": ["94102", "94103", "94104", "94105", "94107", "94108"]
           }
         }
       },
       {
-        "ad_id": "ad_010",
-        "ad_name": "Interactive HTML Widget",
+        "ad_id": "ad_clc_011",
+        "ad_name": "Local Business Directory Widget",
         "ad_type": "multimedia_ad",
-        "ad_description": "Interactive restaurant menu",
+        "ad_description": "Interactive directory of nearby local businesses",
         "ad_content": {
           "media_type": "html",
-          "media_content": "<div class='restaurant-widget'><h2>Today's Special</h2><p>Click to view our menu and order online!</p></div>",
+          "media_content": "<div class='business-directory' style='font-family:Arial;padding:15px;background:#f8f9fa;border-radius:8px;'><h3 style='color:#2c3e50;margin-bottom:15px;'>🏪 Nearby Businesses</h3><ul style='list-style:none;padding:0;'><li style='padding:8px;border-bottom:1px solid #ddd;'>☕ Blue Bottle Coffee - 0.3 mi</li><li style='padding:8px;border-bottom:1px solid #ddd;'>🍕 Tony's Pizzeria - 0.5 mi</li><li style='padding:8px;border-bottom:1px solid #ddd;'>⛽ Shell Gas Station - 0.7 mi</li><li style='padding:8px;'>🏨 Hilton Hotel - 0.9 mi</li></ul></div>",
           "ad_impression": {
             "ad_impression_duration": {
               "value": 35,
@@ -372,26 +411,26 @@
             },
             "alloted_max_impression_count": 7500
           },
-          "ad_advertiser_forwarding_url": "https://restaurant.example.com/menu"
+          "ad_advertiser_forwarding_url": "https://localbiz.example.com/directory"
         },
         "ad_status": "active",
         "ad_start_date": "2026-02-01",
         "ad_end_date": "2026-03-31",
         "campaign": {
-          "campaign_id": "camp_010",
-          "campaign_name": "Restaurant Promotion Q1",
-          "campaign_description": "Local restaurant promotional campaign",
+          "campaign_id": "camp_localbiz_011",
+          "campaign_name": "Local Business Discovery Q1 2026",
+          "campaign_description": "Support local businesses with location-based discovery",
           "campaign_status": "active",
           "campaign_start_date": "2026-02-01",
           "campaign_end_date": "2026-03-31",
           "advertiser": {
-            "advertiser_id": "adv_010",
-            "advertiser_name": "Local Restaurant Group"
+            "advertiser_id": "adv_chamber_011",
+            "advertiser_name": "SF Chamber of Commerce"
           },
           "audience": {
             "region": "North America",
             "country": "USA",
-            "cities": ["San Francisco"],
+            "cities": ["San Francisco", "Daly City"],
             "postcodes": ["94102", "94103"]
           }
         }
