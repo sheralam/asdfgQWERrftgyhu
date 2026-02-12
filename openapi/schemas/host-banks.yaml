@@ -1,0 +1,168 @@
+# Host bank account schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+# Note: bank_account_number is encrypted at rest
+
+HostBankAccount:
+  type: object
+  required:
+    - bank_id
+    - host_id
+    - bank_name
+    - bank_account_number
+    - bank_account_name
+    - bank_account_currency
+  properties:
+    bank_id:
+      type: string
+      format: uuid
+    host_id:
+      type: string
+      format: uuid
+    bank_name:
+      type: string
+      maxLength: 255
+    bank_account_number:
+      type: string
+      description: Encrypted at rest
+    bank_account_name:
+      type: string
+      maxLength: 255
+    bank_account_routing_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    bank_account_swift_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_iban:
+      type: string
+      maxLength: 50
+      nullable: true
+    bank_account_bic:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      description: ISO 4217 currency code
+    is_default:
+      type: boolean
+      default: false
+    is_verified:
+      type: boolean
+      default: false
+    is_sepa_compliant:
+      type: boolean
+      default: false
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    deleted_at:
+      type: string
+      format: date-time
+      nullable: true
+
+HostBankAccountCreate:
+  type: object
+  required:
+    - bank_name
+    - bank_account_number
+    - bank_account_name
+    - bank_account_currency
+  properties:
+    bank_name:
+      type: string
+      maxLength: 255
+    bank_account_number:
+      type: string
+    bank_account_name:
+      type: string
+      maxLength: 255
+    bank_account_routing_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    bank_account_swift_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_iban:
+      type: string
+      maxLength: 50
+      nullable: true
+    bank_account_bic:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+    is_default:
+      type: boolean
+      default: false
+    is_verified:
+      type: boolean
+      default: false
+    is_sepa_compliant:
+      type: boolean
+      default: false
+
+HostBankAccountUpdate:
+  type: object
+  description: Partial update; all fields optional
+  properties:
+    bank_name:
+      type: string
+      maxLength: 255
+    bank_account_number:
+      type: string
+    bank_account_name:
+      type: string
+      maxLength: 255
+    bank_account_routing_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    bank_account_swift_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_iban:
+      type: string
+      maxLength: 50
+      nullable: true
+    bank_account_bic:
+      type: string
+      maxLength: 20
+      nullable: true
+    bank_account_currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+    is_default:
+      type: boolean
+    is_verified:
+      type: boolean
+    is_sepa_compliant:
+      type: boolean
+
+HostBankAccountList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/HostBankAccount'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'

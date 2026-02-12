@@ -1,0 +1,442 @@
+# Device and device details schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+# ad_display_device + device_details (1-1)
+
+Device:
+  type: object
+  description: Ad display device (ad_display_device) with optional nested details
+  required:
+    - device_id
+    - host_id
+    - device_type
+    - device_rating
+    - display_size
+    - avg_idle_time
+    - avg_visitors_count
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    device_id:
+      type: string
+      maxLength: 255
+    host_id:
+      type: string
+      format: uuid
+    device_group_id:
+      type: string
+      format: uuid
+      nullable: true
+    device_type:
+      $ref: 'common.yaml#/DeviceType'
+    device_rating:
+      $ref: 'common.yaml#/DeviceRating'
+    display_size:
+      $ref: 'common.yaml#/DisplaySize'
+    avg_idle_time:
+      type: integer
+      description: Average idle time in minutes; must be multiple of 5
+      minimum: 0
+    avg_visitors_count:
+      type: integer
+      minimum: 0
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    deleted_at:
+      type: string
+      format: date-time
+      nullable: true
+    details:
+      $ref: '#/DeviceDetails'
+      nullable: true
+
+DeviceCreate:
+  type: object
+  required:
+    - device_id
+    - host_id
+    - device_type
+    - device_rating
+    - display_size
+    - avg_idle_time
+    - avg_visitors_count
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    device_id:
+      type: string
+      maxLength: 255
+    host_id:
+      type: string
+      format: uuid
+    device_group_id:
+      type: string
+      format: uuid
+      nullable: true
+    device_type:
+      $ref: 'common.yaml#/DeviceType'
+    device_rating:
+      $ref: 'common.yaml#/DeviceRating'
+    display_size:
+      $ref: 'common.yaml#/DisplaySize'
+    avg_idle_time:
+      type: integer
+      minimum: 0
+    avg_visitors_count:
+      type: integer
+      minimum: 0
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+    details:
+      $ref: '#/DeviceDetailsCreate'
+      nullable: true
+
+DeviceUpdate:
+  type: object
+  description: Partial update for ad_display_device
+  properties:
+    device_group_id:
+      type: string
+      format: uuid
+      nullable: true
+    device_type:
+      $ref: 'common.yaml#/DeviceType'
+    device_rating:
+      $ref: 'common.yaml#/DeviceRating'
+    display_size:
+      $ref: 'common.yaml#/DisplaySize'
+    avg_idle_time:
+      type: integer
+      minimum: 0
+    avg_visitors_count:
+      type: integer
+      minimum: 0
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+
+DeviceDetails:
+  type: object
+  description: 1-1 with ad_display_device; hardware, vendor, purchasing, notes
+  required:
+    - device_id
+  properties:
+    device_id:
+      type: string
+      maxLength: 255
+    hardware_specifications:
+      type: string
+      nullable: true
+    vendor_specification:
+      type: string
+      nullable: true
+    vendor_name:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_part_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    purchasing_details:
+      type: string
+      nullable: true
+    purchase_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_order_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    warranty_expiry_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_price:
+      type: number
+      format: double
+      nullable: true
+    currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      nullable: true
+    price_notes:
+      type: string
+      nullable: true
+    notes:
+      type: string
+      nullable: true
+    serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    model_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    firmware_version:
+      type: string
+      maxLength: 100
+      nullable: true
+    installed_date:
+      type: string
+      format: date
+      nullable: true
+    last_maintenance_date:
+      type: string
+      format: date
+      nullable: true
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+
+DeviceDetailsCreate:
+  type: object
+  description: Create device_details (device_id comes from path)
+  properties:
+    hardware_specifications:
+      type: string
+      nullable: true
+    vendor_specification:
+      type: string
+      nullable: true
+    vendor_name:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_part_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    purchasing_details:
+      type: string
+      nullable: true
+    purchase_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_order_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    warranty_expiry_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_price:
+      type: number
+      format: double
+      nullable: true
+    currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      nullable: true
+    price_notes:
+      type: string
+      nullable: true
+    notes:
+      type: string
+      nullable: true
+    serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    model_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    firmware_version:
+      type: string
+      maxLength: 100
+      nullable: true
+    installed_date:
+      type: string
+      format: date
+      nullable: true
+    last_maintenance_date:
+      type: string
+      format: date
+      nullable: true
+
+DeviceDetailsUpdate:
+  type: object
+  description: Partial update for device_details
+  properties:
+    hardware_specifications:
+      type: string
+      nullable: true
+    vendor_specification:
+      type: string
+      nullable: true
+    vendor_name:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_part_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    vendor_serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    purchasing_details:
+      type: string
+      nullable: true
+    purchase_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_order_number:
+      type: string
+      maxLength: 100
+      nullable: true
+    warranty_expiry_date:
+      type: string
+      format: date
+      nullable: true
+    purchase_price:
+      type: number
+      format: double
+      nullable: true
+    currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      nullable: true
+    price_notes:
+      type: string
+      nullable: true
+    notes:
+      type: string
+      nullable: true
+    serial_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    model_number:
+      type: string
+      maxLength: 255
+      nullable: true
+    firmware_version:
+      type: string
+      maxLength: 100
+      nullable: true
+    installed_date:
+      type: string
+      format: date
+      nullable: true
+    last_maintenance_date:
+      type: string
+      format: date
+      nullable: true
+
+DeviceList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Device'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'

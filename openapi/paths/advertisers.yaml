@@ -1,0 +1,132 @@
+# Advertiser CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/advertisers:
+  get:
+    tags:
+      - Advertisers
+    summary: List all advertisers
+    description: Returns paginated list of advertisers. Excludes soft-deleted by default.
+    operationId: listAdvertisers
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: include_deleted
+        in: query
+        schema:
+          type: boolean
+          default: false
+    responses:
+      '200':
+        description: Paginated list of advertisers
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserList'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Advertisers
+    summary: Create advertiser
+    description: Create a new advertiser. Requires admin role. Created by user is set from auth context.
+    operationId: createAdvertiser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdvertiserCreate'
+    responses:
+      '201':
+        description: Advertiser created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advertiser'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '409':
+        description: advertiser_code already exists
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/advertisers/{advertiser_id}:
+  parameters:
+    - name: advertiser_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Advertisers
+    summary: Get advertiser by ID
+    operationId: getAdvertiser
+    responses:
+      '200':
+        description: Advertiser
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advertiser'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Advertisers
+    summary: Update advertiser
+    description: Partial update. Sets updated_by_id from auth context.
+    operationId: updateAdvertiser
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdvertiserUpdate'
+    responses:
+      '200':
+        description: Updated advertiser
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Advertiser'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Advertisers
+    summary: Soft delete advertiser
+    description: Sets deleted_at. Cascades to contacts and bank accounts.
+    operationId: deleteAdvertiser
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

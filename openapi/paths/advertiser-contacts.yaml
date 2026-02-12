@@ -1,0 +1,132 @@
+# Advertiser contacts CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/advertisers/{advertiser_id}/contacts:
+  parameters:
+    - name: advertiser_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Advertiser Contacts
+    summary: List advertiser contacts
+    operationId: listAdvertiserContacts
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+    responses:
+      '200':
+        description: Paginated list of contacts
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContactList'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Advertiser Contacts
+    summary: Create advertiser contact
+    operationId: createAdvertiserContact
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdvertiserContactCreate'
+    responses:
+      '201':
+        description: Contact created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContact'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/advertisers/{advertiser_id}/contacts/{contact_id}:
+  parameters:
+    - name: advertiser_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    - name: contact_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Advertiser Contacts
+    summary: Get advertiser contact by ID
+    operationId: getAdvertiserContact
+    responses:
+      '200':
+        description: Contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContact'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Advertiser Contacts
+    summary: Update advertiser contact
+    operationId: updateAdvertiserContact
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AdvertiserContactUpdate'
+    responses:
+      '200':
+        description: Updated contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContact'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Advertiser Contacts
+    summary: Delete advertiser contact
+    operationId: deleteAdvertiserContact
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

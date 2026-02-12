@@ -1,0 +1,172 @@
+# Advertiser schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+Advertiser:
+  type: object
+  required:
+    - advertiser_id
+    - advertiser_code
+    - advertiser_name
+    - advertiser_type
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    advertiser_id:
+      type: string
+      format: uuid
+      description: Primary key
+    advertiser_code:
+      type: string
+      maxLength: 255
+      description: Unique business code across platform
+    advertiser_name:
+      type: string
+      maxLength: 500
+    advertiser_type:
+      $ref: 'common.yaml#/AdvertiserType'
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    created_by_id:
+      type: string
+      format: uuid
+      nullable: true
+    updated_by_id:
+      type: string
+      format: uuid
+      nullable: true
+    deleted_at:
+      type: string
+      format: date-time
+      nullable: true
+
+AdvertiserCreate:
+  type: object
+  required:
+    - advertiser_code
+    - advertiser_name
+    - advertiser_type
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    advertiser_code:
+      type: string
+      maxLength: 255
+    advertiser_name:
+      type: string
+      maxLength: 500
+    advertiser_type:
+      $ref: 'common.yaml#/AdvertiserType'
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+
+AdvertiserUpdate:
+  type: object
+  description: Partial update; all fields optional
+  properties:
+    advertiser_code:
+      type: string
+      maxLength: 255
+    advertiser_name:
+      type: string
+      maxLength: 500
+    advertiser_type:
+      $ref: 'common.yaml#/AdvertiserType'
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+
+AdvertiserList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Advertiser'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'

@@ -1,0 +1,130 @@
+# Host CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/hosts:
+  get:
+    tags:
+      - Hosts
+    summary: List all hosts
+    description: Returns paginated list of hosts. Excludes soft-deleted by default.
+    operationId: listHosts
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: include_deleted
+        in: query
+        schema:
+          type: boolean
+          default: false
+    responses:
+      '200':
+        description: Paginated list of hosts
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostList'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Hosts
+    summary: Create host
+    description: Create a new host. Requires admin role. Created by user is set from auth context.
+    operationId: createHost
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostCreate'
+    responses:
+      '201':
+        description: Host created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Host'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/hosts/{host_id}:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Hosts
+    summary: Get host by ID
+    operationId: getHost
+    responses:
+      '200':
+        description: Host
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Host'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Hosts
+    summary: Update host
+    description: Partial update. Sets updated_by_id from auth context.
+    operationId: updateHost
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostUpdate'
+    responses:
+      '200':
+        description: Updated host
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Host'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Hosts
+    summary: Soft delete host
+    description: Sets deleted_at. Cascades to contacts, bank accounts, device groups, and devices.
+    operationId: deleteHost
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

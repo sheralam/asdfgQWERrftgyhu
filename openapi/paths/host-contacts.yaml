@@ -1,0 +1,132 @@
+# Host contacts CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/hosts/{host_id}/contacts:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Host Contacts
+    summary: List host contacts
+    operationId: listHostContacts
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+    responses:
+      '200':
+        description: Paginated list of contacts
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContactList'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Host Contacts
+    summary: Create host contact
+    operationId: createHostContact
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostContactCreate'
+    responses:
+      '201':
+        description: Contact created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContact'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/hosts/{host_id}/contacts/{contact_id}:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    - name: contact_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Host Contacts
+    summary: Get host contact by ID
+    operationId: getHostContact
+    responses:
+      '200':
+        description: Contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContact'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Host Contacts
+    summary: Update host contact
+    operationId: updateHostContact
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostContactUpdate'
+    responses:
+      '200':
+        description: Updated contact
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContact'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Host Contacts
+    summary: Delete host contact
+    operationId: deleteHostContact
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

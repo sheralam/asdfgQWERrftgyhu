@@ -1,0 +1,139 @@
+# Device groups CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/hosts/{host_id}/device-groups:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Device Groups
+    summary: List host device groups
+    operationId: listDeviceGroups
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: status
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeviceGroupStatus'
+    responses:
+      '200':
+        description: Paginated list of device groups
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroupList'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Device Groups
+    summary: Create device group
+    operationId: createDeviceGroup
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceGroupCreate'
+    responses:
+      '201':
+        description: Device group created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroup'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '409':
+        description: group_name already exists for this host
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/hosts/{host_id}/device-groups/{group_id}:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    - name: group_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Device Groups
+    summary: Get device group by ID
+    operationId: getDeviceGroup
+    responses:
+      '200':
+        description: Device group
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroup'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Device Groups
+    summary: Update device group
+    operationId: updateDeviceGroup
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceGroupUpdate'
+    responses:
+      '200':
+        description: Updated device group
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroup'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Device Groups
+    summary: Delete device group
+    description: Typically sets status to deleted rather than hard delete.
+    operationId: deleteDeviceGroup
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

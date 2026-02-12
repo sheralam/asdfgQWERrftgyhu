@@ -1,0 +1,72 @@
+# Device group schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+DeviceGroup:
+  type: object
+  required:
+    - id
+    - host_id
+    - group_name
+    - status
+  properties:
+    id:
+      type: string
+      format: uuid
+    host_id:
+      type: string
+      format: uuid
+    group_name:
+      type: string
+      maxLength: 255
+    status:
+      $ref: 'common.yaml#/DeviceGroupStatus'
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    created_by_id:
+      type: string
+      format: uuid
+      nullable: true
+    updated_by_id:
+      type: string
+      format: uuid
+      nullable: true
+
+DeviceGroupCreate:
+  type: object
+  required:
+    - group_name
+  properties:
+    group_name:
+      type: string
+      maxLength: 255
+    status:
+      $ref: 'common.yaml#/DeviceGroupStatus'
+      default: active
+
+DeviceGroupUpdate:
+  type: object
+  description: Partial update; all fields optional
+  properties:
+    group_name:
+      type: string
+      maxLength: 255
+    status:
+      $ref: 'common.yaml#/DeviceGroupStatus'
+
+DeviceGroupList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/DeviceGroup'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'

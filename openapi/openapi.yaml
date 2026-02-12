@@ -1,0 +1,1328 @@
+# Car Infotainment Ad Platform - OpenAPI 3.0
+# Main spec: references schemas and paths from schemas/ and paths/
+
+openapi: 3.0.3
+info:
+  title: Car Infotainment Ad Platform API
+  description: |
+    CRUD APIs for Advertisers (and contacts, bank accounts), Device details, and Hosts
+    (and contacts, bank accounts, device groups). Soft deletes used where applicable.
+    Authentication via Bearer token; created_by_id/updated_by_id set from auth context.
+  version: 1.0.0
+  license:
+    name: UNLICENSED
+    description: Private / unlicensed
+  contact:
+    name: API Support
+
+servers:
+  - url: https://api.example.com
+    description: Production
+  - url: http://localhost:8080
+    description: Local
+
+tags:
+  - name: Advertisers
+    description: Advertiser CRUD
+  - name: Advertiser Contacts
+    description: Advertiser contact CRUD
+  - name: Advertiser Bank Accounts
+    description: Advertiser bank account CRUD
+  - name: Devices
+    description: Device and device details CRUD
+  - name: Hosts
+    description: Host CRUD
+  - name: Host Contacts
+    description: Host contact CRUD
+  - name: Host Bank Accounts
+    description: Host bank account CRUD
+  - name: Device Groups
+    description: Device group CRUD
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/advertisers:
+    get:
+      tags:
+        - Advertisers
+      summary: List all advertisers
+      description: Returns paginated list of advertisers. Excludes soft-deleted by default.
+      operationId: listAdvertisers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: include_deleted
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Paginated list of advertisers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Advertisers
+      summary: Create advertiser
+      description: Create a new advertiser. Requires admin role. Created by user is set from auth context.
+      operationId: createAdvertiser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserCreate'
+      responses:
+        '201':
+          description: Advertiser created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advertiser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: advertiser_code already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/advertisers/{advertiser_id}:
+    parameters:
+      - name: advertiser_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Advertisers
+      summary: Get advertiser by ID
+      operationId: getAdvertiser
+      responses:
+        '200':
+          description: Advertiser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advertiser'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Advertisers
+      summary: Update advertiser
+      description: Partial update. Sets updated_by_id from auth context.
+      operationId: updateAdvertiser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserUpdate'
+      responses:
+        '200':
+          description: Updated advertiser
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Advertiser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Advertisers
+      summary: Soft delete advertiser
+      description: Sets deleted_at. Cascades to contacts and bank accounts.
+      operationId: deleteAdvertiser
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/advertisers/{advertiser_id}/contacts:
+    parameters:
+      - name: advertiser_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Advertiser Contacts
+      summary: List advertiser contacts
+      operationId: listAdvertiserContacts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Paginated list of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserContactList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Advertiser Contacts
+      summary: Create advertiser contact
+      operationId: createAdvertiserContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContactCreate'
+      responses:
+        '201':
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserContact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/advertisers/{advertiser_id}/contacts/{contact_id}:
+    parameters:
+      - name: advertiser_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Advertiser Contacts
+      summary: Get advertiser contact by ID
+      operationId: getAdvertiserContact
+      responses:
+        '200':
+          description: Contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserContact'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Advertiser Contacts
+      summary: Update advertiser contact
+      operationId: updateAdvertiserContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserContactUpdate'
+      responses:
+        '200':
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserContact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Advertiser Contacts
+      summary: Delete advertiser contact
+      operationId: deleteAdvertiserContact
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/advertisers/{advertiser_id}/bank-accounts:
+    parameters:
+      - name: advertiser_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Advertiser Bank Accounts
+      summary: List advertiser bank accounts
+      operationId: listAdvertiserBankAccounts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Paginated list of bank accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserBankAccountList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Advertiser Bank Accounts
+      summary: Create advertiser bank account
+      description: bank_account_number is encrypted at rest.
+      operationId: createAdvertiserBankAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserBankAccountCreate'
+      responses:
+        '201':
+          description: Bank account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserBankAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/advertisers/{advertiser_id}/bank-accounts/{bank_id}:
+    parameters:
+      - name: advertiser_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: bank_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Advertiser Bank Accounts
+      summary: Get advertiser bank account by ID
+      operationId: getAdvertiserBankAccount
+      responses:
+        '200':
+          description: Bank account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserBankAccount'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Advertiser Bank Accounts
+      summary: Update advertiser bank account
+      operationId: updateAdvertiserBankAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertiserBankAccountUpdate'
+      responses:
+        '200':
+          description: Updated bank account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertiserBankAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Advertiser Bank Accounts
+      summary: Delete advertiser bank account
+      operationId: deleteAdvertiserBankAccount
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/devices:
+    get:
+      tags:
+        - Devices
+      summary: List all devices
+      description: Paginated list. Filter by host_id, device_type, device_rating.
+      operationId: listDevices
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: host_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: device_type
+          in: query
+          schema:
+            $ref: '#/components/schemas/DeviceType'
+        - name: device_rating
+          in: query
+          schema:
+            $ref: '#/components/schemas/DeviceRating'
+        - name: include_deleted
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Paginated list of devices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Devices
+      summary: Create device
+      description: Create ad_display_device. Optionally include details in request body.
+      operationId: createDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceCreate'
+      responses:
+        '201':
+          description: Device created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/devices/{device_id}:
+    parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+    get:
+      tags:
+        - Devices
+      summary: Get device by ID
+      description: Returns device with nested details if present.
+      operationId: getDevice
+      responses:
+        '200':
+          description: Device with optional details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Devices
+      summary: Update device basic info
+      description: Updates ad_display_device only.
+      operationId: updateDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdate'
+      responses:
+        '200':
+          description: Updated device
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Devices
+      summary: Soft delete device
+      description: Sets deleted_at. Cascades to device_details.
+      operationId: deleteDevice
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/devices/{device_id}/details:
+    parameters:
+      - name: device_id
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 255
+    get:
+      tags:
+        - Devices
+      summary: Get device details only
+      operationId: getDeviceDetails
+      responses:
+        '200':
+          description: Device details (1-1 with device)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Devices
+      summary: Create device details
+      description: Create device_details for an existing device (if not exists).
+      operationId: createDeviceDetails
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDetailsCreate'
+      responses:
+        '201':
+          description: Device details created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Device details already exist for this device
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Devices
+      summary: Update device details
+      operationId: updateDeviceDetails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDetailsUpdate'
+      responses:
+        '200':
+          description: Updated device details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts:
+    get:
+      tags:
+        - Hosts
+      summary: List all hosts
+      description: Returns paginated list of hosts. Excludes soft-deleted by default.
+      operationId: listHosts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: include_deleted
+          in: query
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Paginated list of hosts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Hosts
+      summary: Create host
+      description: Create a new host. Requires admin role. Created by user is set from auth context.
+      operationId: createHost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostCreate'
+      responses:
+        '201':
+          description: Host created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Host'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Hosts
+      summary: Get host by ID
+      operationId: getHost
+      responses:
+        '200':
+          description: Host
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Host'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Hosts
+      summary: Update host
+      description: Partial update. Sets updated_by_id from auth context.
+      operationId: updateHost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostUpdate'
+      responses:
+        '200':
+          description: Updated host
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Host'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Hosts
+      summary: Soft delete host
+      description: Sets deleted_at. Cascades to contacts, bank accounts, device groups, and devices.
+      operationId: deleteHost
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/contacts:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Host Contacts
+      summary: List host contacts
+      operationId: listHostContacts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Paginated list of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostContactList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Host Contacts
+      summary: Create host contact
+      operationId: createHostContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContactCreate'
+      responses:
+        '201':
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostContact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/contacts/{contact_id}:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Host Contacts
+      summary: Get host contact by ID
+      operationId: getHostContact
+      responses:
+        '200':
+          description: Contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostContact'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Host Contacts
+      summary: Update host contact
+      operationId: updateHostContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostContactUpdate'
+      responses:
+        '200':
+          description: Updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostContact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Host Contacts
+      summary: Delete host contact
+      operationId: deleteHostContact
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/bank-accounts:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Host Bank Accounts
+      summary: List host bank accounts
+      operationId: listHostBankAccounts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Paginated list of bank accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostBankAccountList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Host Bank Accounts
+      summary: Create host bank account
+      description: bank_account_number is encrypted at rest.
+      operationId: createHostBankAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccountCreate'
+      responses:
+        '201':
+          description: Bank account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostBankAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/bank-accounts/{bank_id}:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: bank_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Host Bank Accounts
+      summary: Get host bank account by ID
+      operationId: getHostBankAccount
+      responses:
+        '200':
+          description: Bank account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostBankAccount'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Host Bank Accounts
+      summary: Update host bank account
+      operationId: updateHostBankAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccountUpdate'
+      responses:
+        '200':
+          description: Updated bank account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HostBankAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Host Bank Accounts
+      summary: Delete host bank account
+      operationId: deleteHostBankAccount
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/device-groups:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Device Groups
+      summary: List host device groups
+      operationId: listDeviceGroups
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/DeviceGroupStatus'
+      responses:
+        '200':
+          description: Paginated list of device groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceGroupList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Device Groups
+      summary: Create device group
+      operationId: createDeviceGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroupCreate'
+      responses:
+        '201':
+          description: Device group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceGroup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: group_name already exists for this host
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/hosts/{host_id}/device-groups/{group_id}:
+    parameters:
+      - name: host_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: group_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+        - Device Groups
+      summary: Get device group by ID
+      operationId: getDeviceGroup
+      responses:
+        '200':
+          description: Device group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceGroup'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Device Groups
+      summary: Update device group
+      operationId: updateDeviceGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceGroupUpdate'
+      responses:
+        '200':
+          description: Updated device group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceGroup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Device Groups
+      summary: Delete device group
+      description: Typically sets status to deleted rather than hard delete.
+      operationId: deleteDeviceGroup
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT or opaque token; used for created_by_id/updated_by_id audit
+
+  responses:
+    BadRequest:
+      description: Bad Request - validation or invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized - missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not Found - resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    # --- common.yaml ---
+    AdvertiserType:
+      $ref: 'schemas/common.yaml#/AdvertiserType'
+    ContactType:
+      $ref: 'schemas/common.yaml#/ContactType'
+    DeviceType:
+      $ref: 'schemas/common.yaml#/DeviceType'
+    DeviceRating:
+      $ref: 'schemas/common.yaml#/DeviceRating'
+    DisplaySize:
+      $ref: 'schemas/common.yaml#/DisplaySize'
+    StatusEnum:
+      $ref: 'schemas/common.yaml#/StatusEnum'
+    AgeGroup:
+      $ref: 'schemas/common.yaml#/AgeGroup'
+    DeviceGroupStatus:
+      $ref: 'schemas/common.yaml#/DeviceGroupStatus'
+    Timestamps:
+      $ref: 'schemas/common.yaml#/Timestamps'
+    AuditFields:
+      $ref: 'schemas/common.yaml#/AuditFields'
+    PaginationParams:
+      $ref: 'schemas/common.yaml#/PaginationParams'
+    PaginationMeta:
+      $ref: 'schemas/common.yaml#/PaginationMeta'
+    GeoPoint:
+      $ref: 'schemas/common.yaml#/GeoPoint'
+    ErrorDetail:
+      $ref: 'schemas/common.yaml#/ErrorDetail'
+    ErrorResponse:
+      $ref: 'schemas/common.yaml#/ErrorResponse'
+    # --- advertisers ---
+    Advertiser:
+      $ref: 'schemas/advertisers.yaml#/Advertiser'
+    AdvertiserCreate:
+      $ref: 'schemas/advertisers.yaml#/AdvertiserCreate'
+    AdvertiserUpdate:
+      $ref: 'schemas/advertisers.yaml#/AdvertiserUpdate'
+    AdvertiserList:
+      $ref: 'schemas/advertisers.yaml#/AdvertiserList'
+    # --- advertiser contacts ---
+    AdvertiserContact:
+      $ref: 'schemas/advertiser-contacts.yaml#/AdvertiserContact'
+    AdvertiserContactCreate:
+      $ref: 'schemas/advertiser-contacts.yaml#/AdvertiserContactCreate'
+    AdvertiserContactUpdate:
+      $ref: 'schemas/advertiser-contacts.yaml#/AdvertiserContactUpdate'
+    AdvertiserContactList:
+      $ref: 'schemas/advertiser-contacts.yaml#/AdvertiserContactList'
+    # --- advertiser banks ---
+    AdvertiserBankAccount:
+      $ref: 'schemas/advertiser-banks.yaml#/AdvertiserBankAccount'
+    AdvertiserBankAccountCreate:
+      $ref: 'schemas/advertiser-banks.yaml#/AdvertiserBankAccountCreate'
+    AdvertiserBankAccountUpdate:
+      $ref: 'schemas/advertiser-banks.yaml#/AdvertiserBankAccountUpdate'
+    AdvertiserBankAccountList:
+      $ref: 'schemas/advertiser-banks.yaml#/AdvertiserBankAccountList'
+    # --- devices ---
+    Device:
+      $ref: 'schemas/devices.yaml#/Device'
+    DeviceCreate:
+      $ref: 'schemas/devices.yaml#/DeviceCreate'
+    DeviceUpdate:
+      $ref: 'schemas/devices.yaml#/DeviceUpdate'
+    DeviceDetails:
+      $ref: 'schemas/devices.yaml#/DeviceDetails'
+    DeviceDetailsCreate:
+      $ref: 'schemas/devices.yaml#/DeviceDetailsCreate'
+    DeviceDetailsUpdate:
+      $ref: 'schemas/devices.yaml#/DeviceDetailsUpdate'
+    DeviceList:
+      $ref: 'schemas/devices.yaml#/DeviceList'
+    # --- hosts ---
+    Host:
+      $ref: 'schemas/hosts.yaml#/Host'
+    HostCreate:
+      $ref: 'schemas/hosts.yaml#/HostCreate'
+    HostUpdate:
+      $ref: 'schemas/hosts.yaml#/HostUpdate'
+    HostList:
+      $ref: 'schemas/hosts.yaml#/HostList'
+    # --- host contacts ---
+    HostContact:
+      $ref: 'schemas/host-contacts.yaml#/HostContact'
+    HostContactCreate:
+      $ref: 'schemas/host-contacts.yaml#/HostContactCreate'
+    HostContactUpdate:
+      $ref: 'schemas/host-contacts.yaml#/HostContactUpdate'
+    HostContactList:
+      $ref: 'schemas/host-contacts.yaml#/HostContactList'
+    # --- host banks ---
+    HostBankAccount:
+      $ref: 'schemas/host-banks.yaml#/HostBankAccount'
+    HostBankAccountCreate:
+      $ref: 'schemas/host-banks.yaml#/HostBankAccountCreate'
+    HostBankAccountUpdate:
+      $ref: 'schemas/host-banks.yaml#/HostBankAccountUpdate'
+    HostBankAccountList:
+      $ref: 'schemas/host-banks.yaml#/HostBankAccountList'
+    # --- device groups ---
+    DeviceGroup:
+      $ref: 'schemas/device-groups.yaml#/DeviceGroup'
+    DeviceGroupCreate:
+      $ref: 'schemas/device-groups.yaml#/DeviceGroupCreate'
+    DeviceGroupUpdate:
+      $ref: 'schemas/device-groups.yaml#/DeviceGroupUpdate'
+    DeviceGroupList:
+      $ref: 'schemas/device-groups.yaml#/DeviceGroupList'

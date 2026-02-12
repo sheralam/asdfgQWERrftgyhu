@@ -1,0 +1,217 @@
+# Device and device details CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/devices:
+  get:
+    tags:
+      - Devices
+    summary: List all devices
+    description: Paginated list. Filter by host_id, device_type, device_rating.
+    operationId: listDevices
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: host_id
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: device_type
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeviceType'
+      - name: device_rating
+        in: query
+        schema:
+          $ref: '#/components/schemas/DeviceRating'
+      - name: include_deleted
+        in: query
+        schema:
+          type: boolean
+          default: false
+    responses:
+      '200':
+        description: Paginated list of devices
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceList'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Devices
+    summary: Create device
+    description: Create ad_display_device. Optionally include details in request body.
+    operationId: createDevice
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceCreate'
+    responses:
+      '201':
+        description: Device created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/devices/{device_id}:
+  parameters:
+    - name: device_id
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+  get:
+    tags:
+      - Devices
+    summary: Get device by ID
+    description: Returns device with nested details if present.
+    operationId: getDevice
+    responses:
+      '200':
+        description: Device with optional details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Devices
+    summary: Update device basic info
+    description: Updates ad_display_device only.
+    operationId: updateDevice
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceUpdate'
+    responses:
+      '200':
+        description: Updated device
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Devices
+    summary: Soft delete device
+    description: Sets deleted_at. Cascades to device_details.
+    operationId: deleteDevice
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/devices/{device_id}/details:
+  parameters:
+    - name: device_id
+      in: path
+      required: true
+      schema:
+        type: string
+        maxLength: 255
+  get:
+    tags:
+      - Devices
+    summary: Get device details only
+    operationId: getDeviceDetails
+    responses:
+      '200':
+        description: Device details (1-1 with device)
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDetails'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Devices
+    summary: Create device details
+    description: Create device_details for an existing device (if not exists).
+    operationId: createDeviceDetails
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceDetailsCreate'
+    responses:
+      '201':
+        description: Device details created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDetails'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '409':
+        description: Device details already exist for this device
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Devices
+    summary: Update device details
+    operationId: updateDeviceDetails
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeviceDetailsUpdate'
+    responses:
+      '200':
+        description: Updated device details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDetails'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

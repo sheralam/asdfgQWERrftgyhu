@@ -1,0 +1,160 @@
+# Host schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+Host:
+  type: object
+  required:
+    - host_id
+    - host_name
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    host_id:
+      type: string
+      format: uuid
+    host_name:
+      type: string
+      maxLength: 500
+    target_audience_age_group:
+      $ref: 'common.yaml#/AgeGroup'
+      nullable: true
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    created_by_id:
+      type: string
+      format: uuid
+      nullable: true
+    updated_by_id:
+      type: string
+      format: uuid
+      nullable: true
+    deleted_at:
+      type: string
+      format: date-time
+      nullable: true
+
+HostCreate:
+  type: object
+  required:
+    - host_name
+    - address_line_1
+    - city
+    - state_province
+    - postal_code
+    - country
+    - timezone
+  properties:
+    host_name:
+      type: string
+      maxLength: 500
+    target_audience_age_group:
+      $ref: 'common.yaml#/AgeGroup'
+      nullable: true
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+
+HostUpdate:
+  type: object
+  description: Partial update; all fields optional
+  properties:
+    host_name:
+      type: string
+      maxLength: 500
+    target_audience_age_group:
+      $ref: 'common.yaml#/AgeGroup'
+      nullable: true
+    address_line_1:
+      type: string
+      maxLength: 500
+    address_line_2:
+      type: string
+      maxLength: 500
+      nullable: true
+    city:
+      type: string
+      maxLength: 255
+    state_province:
+      type: string
+      maxLength: 255
+    postal_code:
+      type: string
+      maxLength: 20
+    country:
+      type: string
+      maxLength: 255
+    location:
+      $ref: 'common.yaml#/GeoPoint'
+      nullable: true
+    timezone:
+      type: string
+      maxLength: 100
+
+HostList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/Host'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'

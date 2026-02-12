@@ -1,0 +1,133 @@
+# Host bank accounts CRUD paths
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+/api/v1/hosts/{host_id}/bank-accounts:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Host Bank Accounts
+    summary: List host bank accounts
+    operationId: listHostBankAccounts
+    parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+    responses:
+      '200':
+        description: Paginated list of bank accounts
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccountList'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  post:
+    tags:
+      - Host Bank Accounts
+    summary: Create host bank account
+    description: bank_account_number is encrypted at rest.
+    operationId: createHostBankAccount
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostBankAccountCreate'
+    responses:
+      '201':
+        description: Bank account created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccount'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/api/v1/hosts/{host_id}/bank-accounts/{bank_id}:
+  parameters:
+    - name: host_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    - name: bank_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  get:
+    tags:
+      - Host Bank Accounts
+    summary: Get host bank account by ID
+    operationId: getHostBankAccount
+    responses:
+      '200':
+        description: Bank account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccount'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  put:
+    tags:
+      - Host Bank Accounts
+    summary: Update host bank account
+    operationId: updateHostBankAccount
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HostBankAccountUpdate'
+    responses:
+      '200':
+        description: Updated bank account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HostBankAccount'
+      '400':
+        $ref: '#/components/responses/BadRequest'
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+  delete:
+    tags:
+      - Host Bank Accounts
+    summary: Delete host bank account
+    operationId: deleteHostBankAccount
+    responses:
+      '204':
+        description: Deleted
+      '404':
+        $ref: '#/components/responses/NotFound'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

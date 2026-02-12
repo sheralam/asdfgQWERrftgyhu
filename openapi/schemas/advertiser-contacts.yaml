@@ -1,0 +1,161 @@
+# Advertiser contact schemas
+# Car Infotainment Ad Platform - OpenAPI 3.0
+
+AdvertiserContact:
+  type: object
+  required:
+    - contact_id
+    - advertiser_id
+    - contact_name
+    - contact_email
+    - contact_phone
+    - contact_type
+  properties:
+    contact_id:
+      type: string
+      format: uuid
+    advertiser_id:
+      type: string
+      format: uuid
+    contact_name:
+      type: string
+      maxLength: 255
+    contact_email:
+      type: string
+      format: email
+      maxLength: 255
+    contact_phone:
+      type: string
+      maxLength: 50
+    contact_address:
+      type: string
+      maxLength: 500
+      nullable: true
+    contact_city:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_state:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_postal_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    contact_country:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_type:
+      $ref: 'common.yaml#/ContactType'
+    is_point_of_contact:
+      type: boolean
+      default: false
+    created_at:
+      type: string
+      format: date-time
+    updated_at:
+      type: string
+      format: date-time
+      nullable: true
+    deleted_at:
+      type: string
+      format: date-time
+      nullable: true
+
+AdvertiserContactCreate:
+  type: object
+  required:
+    - contact_name
+    - contact_email
+    - contact_phone
+    - contact_type
+  properties:
+    contact_name:
+      type: string
+      maxLength: 255
+    contact_email:
+      type: string
+      format: email
+      maxLength: 255
+    contact_phone:
+      type: string
+      maxLength: 50
+    contact_address:
+      type: string
+      maxLength: 500
+      nullable: true
+    contact_city:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_state:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_postal_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    contact_country:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_type:
+      $ref: 'common.yaml#/ContactType'
+    is_point_of_contact:
+      type: boolean
+      default: false
+
+AdvertiserContactUpdate:
+  type: object
+  description: Partial update; all fields optional
+  properties:
+    contact_name:
+      type: string
+      maxLength: 255
+    contact_email:
+      type: string
+      format: email
+      maxLength: 255
+    contact_phone:
+      type: string
+      maxLength: 50
+    contact_address:
+      type: string
+      maxLength: 500
+      nullable: true
+    contact_city:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_state:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_postal_code:
+      type: string
+      maxLength: 20
+      nullable: true
+    contact_country:
+      type: string
+      maxLength: 255
+      nullable: true
+    contact_type:
+      $ref: 'common.yaml#/ContactType'
+    is_point_of_contact:
+      type: boolean
+
+AdvertiserContactList:
+  type: object
+  required:
+    - data
+    - meta
+  properties:
+    data:
+      type: array
+      items:
+        $ref: '#/AdvertiserContact'
+    meta:
+      $ref: 'common.yaml#/PaginationMeta'
