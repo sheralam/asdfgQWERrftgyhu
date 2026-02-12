@@ -1,17 +1,30 @@
 -- ============================================================================
 -- Users Table and Views
 -- ============================================================================
+-- admin: creates advertisers and hosts.
+-- campaign_manager: creates campaigns and ads.
 
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     full_name VARCHAR(255),
+    role user_role_enum NOT NULL DEFAULT 'campaign_manager',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
     CONSTRAINT valid_user_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
+
+-- Foreign keys: who created advertisers, hosts, campaigns, and ads
+ALTER TABLE advertisers
+    ADD CONSTRAINT fk_advertisers_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE hosts
+    ADD CONSTRAINT fk_hosts_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE campaigns
+    ADD CONSTRAINT fk_campaigns_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE ads
+    ADD CONSTRAINT fk_ads_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 
 -- ============================================================================
 -- Useful Views

@@ -1,12 +1,18 @@
 -- ============================================================================
 -- Ad Tables
 -- ============================================================================
+-- Campaigns can have multiple ads. Ads are unique across the platform (ad_id PK, ad_code UK).
+-- Created by campaign_manager (created_by_id).
 
 CREATE TABLE ads (
     ad_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ad_code VARCHAR(255) NOT NULL UNIQUE,
     campaign_id UUID NOT NULL REFERENCES campaigns(campaign_id) ON DELETE CASCADE,
     ad_name VARCHAR(500) NOT NULL,
     ad_description TEXT,
+    country VARCHAR(255),
+    city VARCHAR(255),
+    postcode VARCHAR(20),
     ad_position ad_position_enum NOT NULL,
     ad_type ad_type_enum NOT NULL,
     ad_start_date DATE NOT NULL,

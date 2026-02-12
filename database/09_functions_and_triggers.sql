@@ -61,7 +61,6 @@ COMMENT ON TABLE campaigns IS 'Marketing campaigns created by advertisers';
 COMMENT ON TABLE ads IS 'Individual advertisements within campaigns';
 COMMENT ON TABLE ad_content IS 'Media content and settings for each ad';
 COMMENT ON TABLE ad_impressions IS 'Tracks each time an ad is displayed (partitioned by date)';
-COMMENT ON TABLE ad_impressions_aggregated IS 'Pre-computed hourly/daily impression statistics';
 COMMENT ON COLUMN devices.avg_idle_time IS 'Average idle time in minutes (must be multiple of 5)';
 COMMENT ON COLUMN ad_content.alloted_max_impression_count IS 'Maximum number of times this ad can be shown';
 COMMENT ON COLUMN ad_time_slots.time_slot_start IS 'Start time in 15-minute intervals (HH:MM format)';

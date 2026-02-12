@@ -1,12 +1,18 @@
 -- ============================================================================
 -- Campaign Tables
 -- ============================================================================
+-- Advertiser can have multiple campaigns. Campaigns are unique across the platform
+-- (campaign_id PK, campaign_code UK). Created by campaign_manager (created_by_id).
 
 CREATE TABLE campaigns (
     campaign_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    campaign_code VARCHAR(255) NOT NULL UNIQUE,
     advertiser_id UUID NOT NULL REFERENCES advertisers(advertiser_id) ON DELETE CASCADE,
     campaign_name VARCHAR(500) NOT NULL,
     campaign_description TEXT,
+    country VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    postcode VARCHAR(20) NOT NULL,
     campaign_start_date DATE NOT NULL,
     campaign_end_date DATE NOT NULL,
     campaign_expiry_date DATE,

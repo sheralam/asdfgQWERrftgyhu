@@ -1,5 +1,6 @@
 -- ============================================================================
--- Performance Indexes
+-- Car Infotainment Ad Platform - Performance Indexes
+-- Run after schema.sql
 -- ============================================================================
 
 -- Geographic indexes (GIST for geography columns)

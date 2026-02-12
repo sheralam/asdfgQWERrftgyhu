@@ -1,11 +1,14 @@
 -- ============================================================================
 -- Host Tables
 -- ============================================================================
+-- Hosts are created by admin users (created_by_id references users with role admin).
+-- device_groups: list of group names; each device under this host can be assigned to at most one.
 
 CREATE TABLE hosts (
     host_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     host_name VARCHAR(500) NOT NULL,
     target_audience_age_group age_group_enum,
+    device_groups TEXT[] NOT NULL DEFAULT '{}',
     address_line_1 VARCHAR(500) NOT NULL,
     address_line_2 VARCHAR(500),
     city VARCHAR(255) NOT NULL,
@@ -62,6 +65,7 @@ CREATE TABLE host_bank_accounts (
 CREATE TABLE devices (
     device_id VARCHAR(255) PRIMARY KEY,
     host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
+    device_group VARCHAR(255),
     device_type device_type_enum NOT NULL,
     device_rating device_rating_enum NOT NULL,
     display_size display_size_enum NOT NULL,

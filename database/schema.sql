@@ -132,6 +132,9 @@ CREATE TYPE esrb_rating_enum AS ENUM (
     'AO'
 );
 
+-- User roles: admin creates advertisers and hosts; campaign_manager creates campaigns and ads
+CREATE TYPE user_role_enum AS ENUM ('admin', 'campaign_manager');
+
 -- ============================================================================
 -- GEOGRAPHIC TABLES
 -- ============================================================================
@@ -183,9 +186,10 @@ CREATE TABLE postcodes (
 -- ADVERTISER TABLES
 -- ============================================================================
 
--- Advertisers table
+-- Advertisers table (unique across platform: advertiser_id PK, advertiser_code UK)
 CREATE TABLE advertisers (
     advertiser_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    advertiser_code VARCHAR(255) NOT NULL UNIQUE,
     advertiser_name VARCHAR(500) NOT NULL,
     advertiser_type advertiser_type_enum NOT NULL,
     
@@ -264,6 +268,7 @@ CREATE TABLE hosts (
     host_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     host_name VARCHAR(500) NOT NULL,
     target_audience_age_group age_group_enum,
+    device_groups TEXT[] NOT NULL DEFAULT '{}',
     
     -- Address information
     address_line_1 VARCHAR(500) NOT NULL,
@@ -333,10 +338,11 @@ CREATE TABLE host_bank_accounts (
 -- DEVICE TABLES
 -- ============================================================================
 
--- Devices table
+-- Devices table (device_group: max 1 group from host's device_groups)
 CREATE TABLE devices (
     device_id VARCHAR(255) PRIMARY KEY,
     host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
+    device_group VARCHAR(255),
     
     device_type device_type_enum NOT NULL,
     device_rating device_rating_enum NOT NULL,
@@ -366,13 +372,17 @@ CREATE TABLE devices (
 -- CAMPAIGN TABLES
 -- ============================================================================
 
--- Campaigns table
+-- Campaigns table (unique across platform: campaign_id PK, campaign_code UK)
 CREATE TABLE campaigns (
     campaign_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    campaign_code VARCHAR(255) NOT NULL UNIQUE,
     advertiser_id UUID NOT NULL REFERENCES advertisers(advertiser_id) ON DELETE CASCADE,
     
     campaign_name VARCHAR(500) NOT NULL,
     campaign_description TEXT,
+    country VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    postcode VARCHAR(20) NOT NULL,
     
     -- Date range
     campaign_start_date DATE NOT NULL,
@@ -431,4 +441,186 @@ CREATE TABLE campaign_postcodes (
     PRIMARY KEY (campaign_id, postcode_id)
 );
 
--- See schema_ads.sql for ad-related tables
+-- ============================================================================
+-- AD TABLES
+-- ============================================================================
+
+-- Ads table (unique across platform: ad_id PK, ad_code UK)
+CREATE TABLE ads (
+    ad_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ad_code VARCHAR(255) NOT NULL UNIQUE,
+    campaign_id UUID NOT NULL REFERENCES campaigns(campaign_id) ON DELETE CASCADE,
+    ad_name VARCHAR(500) NOT NULL,
+    ad_description TEXT,
+    country VARCHAR(255),
+    city VARCHAR(255),
+    postcode VARCHAR(20),
+    ad_position ad_position_enum NOT NULL,
+    ad_type ad_type_enum NOT NULL,
+    ad_start_date DATE NOT NULL,
+    ad_end_date DATE NOT NULL,
+    ad_expiry_date DATE,
+    ad_in_view_duration JSONB,
+    ad_view_count INTEGER DEFAULT 0,
+    ad_status status_enum NOT NULL DEFAULT 'draft',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    created_by_id UUID,
+    created_by_name VARCHAR(255),
+    updated_by_id UUID,
+    updated_by_name VARCHAR(255),
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT valid_ad_dates CHECK (ad_end_date >= ad_start_date),
+    CONSTRAINT valid_ad_expiry CHECK (ad_expiry_date IS NULL OR ad_expiry_date >= ad_end_date)
+);
+
+CREATE TABLE ad_content (
+    content_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ad_id UUID NOT NULL REFERENCES ads(ad_id) ON DELETE CASCADE,
+    media_type media_type_enum NOT NULL,
+    media_content TEXT NOT NULL,
+    ad_impression_duration JSONB NOT NULL,
+    alloted_max_impression_count INTEGER,
+    ad_advertiser_forwarding_url TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    CONSTRAINT valid_url CHECK (ad_advertiser_forwarding_url IS NULL OR ad_advertiser_forwarding_url ~* '^https?://')
+);
+
+CREATE TABLE ad_time_slots (
+    time_slot_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ad_id UUID NOT NULL REFERENCES ads(ad_id) ON DELETE CASCADE,
+    time_slot_start TIME NOT NULL,
+    time_slot_end TIME NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT valid_time_range CHECK (time_slot_end > time_slot_start)
+);
+
+CREATE TABLE ad_content_ratings (
+    rating_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ad_id UUID NOT NULL REFERENCES ads(ad_id) ON DELETE CASCADE,
+    mpaa_rating mpaa_rating_enum,
+    esrb_rating esrb_rating_enum,
+    warning_required BOOLEAN DEFAULT TRUE,
+    content_warnings JSONB DEFAULT '[]'::jsonb,
+    no_prohibited_content BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    UNIQUE(ad_id)
+);
+
+-- ============================================================================
+-- IMPRESSION TRACKING TABLES
+-- ============================================================================
+
+CREATE TABLE ad_impressions (
+    impression_id UUID DEFAULT uuid_generate_v4(),
+    ad_id UUID NOT NULL REFERENCES ads(ad_id) ON DELETE CASCADE,
+    impression_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    session_duration_seconds INTEGER,
+    completed BOOLEAN DEFAULT FALSE,
+    user_agent TEXT,
+    ip_address INET,
+    PRIMARY KEY (impression_id, impression_timestamp)
+) PARTITION BY RANGE (impression_timestamp);
+
+CREATE TABLE ad_impressions_2026_01 PARTITION OF ad_impressions FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+CREATE TABLE ad_impressions_2026_02 PARTITION OF ad_impressions FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+CREATE TABLE ad_impressions_2026_03 PARTITION OF ad_impressions FOR VALUES FROM ('2026-03-01') TO ('2026-04-01');
+CREATE TABLE ad_impressions_2026_04 PARTITION OF ad_impressions FOR VALUES FROM ('2026-04-01') TO ('2026-05-01');
+CREATE TABLE ad_impressions_2026_05 PARTITION OF ad_impressions FOR VALUES FROM ('2026-05-01') TO ('2026-06-01');
+CREATE TABLE ad_impressions_2026_06 PARTITION OF ad_impressions FOR VALUES FROM ('2026-06-01') TO ('2026-07-01');
+CREATE TABLE ad_impressions_2026_07 PARTITION OF ad_impressions FOR VALUES FROM ('2026-07-01') TO ('2026-08-01');
+CREATE TABLE ad_impressions_2026_08 PARTITION OF ad_impressions FOR VALUES FROM ('2026-08-01') TO ('2026-09-01');
+CREATE TABLE ad_impressions_2026_09 PARTITION OF ad_impressions FOR VALUES FROM ('2026-09-01') TO ('2026-10-01');
+CREATE TABLE ad_impressions_2026_10 PARTITION OF ad_impressions FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');
+CREATE TABLE ad_impressions_2026_11 PARTITION OF ad_impressions FOR VALUES FROM ('2026-11-01') TO ('2026-12-01');
+CREATE TABLE ad_impressions_2026_12 PARTITION OF ad_impressions FOR VALUES FROM ('2026-12-01') TO ('2027-01-01');
+
+-- ============================================================================
+-- USERS TABLE
+-- ============================================================================
+
+CREATE TABLE users (
+    user_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    full_name VARCHAR(255),
+    role user_role_enum NOT NULL DEFAULT 'campaign_manager',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ,
+    CONSTRAINT valid_user_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
+
+ALTER TABLE advertisers ADD CONSTRAINT fk_advertisers_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE hosts ADD CONSTRAINT fk_hosts_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE ads ADD CONSTRAINT fk_ads_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+
+-- ============================================================================
+-- VIEWS
+-- ============================================================================
+
+CREATE VIEW active_campaigns AS
+SELECT c.*, a.advertiser_name, a.advertiser_type
+FROM campaigns c
+JOIN advertisers a ON c.advertiser_id = a.advertiser_id
+WHERE c.campaign_status = 'active' AND c.deleted_at IS NULL AND a.deleted_at IS NULL
+  AND CURRENT_DATE BETWEEN c.campaign_start_date AND c.campaign_end_date;
+
+CREATE VIEW active_ads AS
+SELECT ad.*, ac.media_type, ac.media_content, ac.ad_impression_duration, ac.alloted_max_impression_count, ac.ad_advertiser_forwarding_url,
+       c.campaign_name, c.campaign_description, c.campaign_status, c.campaign_start_date, c.campaign_end_date, adv.advertiser_id, adv.advertiser_name
+FROM ads ad
+JOIN ad_content ac ON ad.ad_id = ac.ad_id
+JOIN campaigns c ON ad.campaign_id = c.campaign_id
+JOIN advertisers adv ON c.advertiser_id = adv.advertiser_id
+WHERE ad.ad_status = 'active' AND ad.deleted_at IS NULL AND c.campaign_status = 'active' AND c.deleted_at IS NULL
+  AND CURRENT_DATE BETWEEN ad.ad_start_date AND ad.ad_end_date AND CURRENT_DATE BETWEEN c.campaign_start_date AND c.campaign_end_date;
+
+-- ============================================================================
+-- FUNCTIONS AND TRIGGERS
+-- ============================================================================
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION check_impression_limit(p_ad_id UUID)
+RETURNS BOOLEAN AS $$
+DECLARE
+    v_max_count INTEGER;
+    v_current_count BIGINT;
+BEGIN
+    SELECT alloted_max_impression_count INTO v_max_count FROM ad_content WHERE ad_id = p_ad_id;
+    IF v_max_count IS NULL THEN RETURN TRUE; END IF;
+    SELECT COUNT(*) INTO v_current_count FROM ad_impressions WHERE ad_id = p_ad_id;
+    RETURN v_current_count < v_max_count;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_advertisers_updated_at BEFORE UPDATE ON advertisers FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_hosts_updated_at BEFORE UPDATE ON hosts FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_campaigns_updated_at BEFORE UPDATE ON campaigns FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_ads_updated_at BEFORE UPDATE ON ads FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+-- ============================================================================
+-- COMMENTS
+-- ============================================================================
+
+COMMENT ON TABLE advertisers IS 'Stores advertiser/client information who purchase ad campaigns';
+COMMENT ON TABLE hosts IS 'Stores information about device owners/operators';
+COMMENT ON TABLE devices IS 'Physical devices (cars, shops, houses) that display ads';
+COMMENT ON TABLE campaigns IS 'Marketing campaigns created by advertisers';
+COMMENT ON TABLE ads IS 'Individual advertisements within campaigns';
+COMMENT ON TABLE ad_content IS 'Media content and settings for each ad';
+COMMENT ON TABLE ad_impressions IS 'Tracks each time an ad is displayed (partitioned by date)';
+COMMENT ON COLUMN devices.avg_idle_time IS 'Average idle time in minutes (must be multiple of 5)';
+COMMENT ON COLUMN ad_content.alloted_max_impression_count IS 'Maximum number of times this ad can be shown';
+COMMENT ON COLUMN ad_time_slots.time_slot_start IS 'Start time in 15-minute intervals (HH:MM format)';

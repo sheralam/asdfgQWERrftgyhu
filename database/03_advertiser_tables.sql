@@ -2,8 +2,11 @@
 -- Advertiser Tables
 -- ============================================================================
 
+-- Advertisers are unique across the platform (advertiser_id PK, advertiser_code UK).
+-- Created by admin users only (created_by_id references users with role admin).
 CREATE TABLE advertisers (
     advertiser_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    advertiser_code VARCHAR(255) NOT NULL UNIQUE,
     advertiser_name VARCHAR(500) NOT NULL,
     advertiser_type advertiser_type_enum NOT NULL,
     address_line_1 VARCHAR(500) NOT NULL,

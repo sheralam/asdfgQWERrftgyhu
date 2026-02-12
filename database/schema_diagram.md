@@ -10,7 +10,12 @@ erDiagram
     
     advertisers ||--o{ advertiser_contacts : has
     advertisers ||--o{ advertiser_bank_accounts : has
-    advertisers ||--o{ campaigns : creates
+    advertisers ||--o{ campaigns : has
+    
+    users ||--o{ advertisers : "admin creates"
+    users ||--o{ hosts : "admin creates"
+    users ||--o{ campaigns : "campaign_manager creates"
+    users ||--o{ ads : "campaign_manager creates"
     
     hosts ||--o{ host_contacts : has
     hosts ||--o{ host_bank_accounts : has
@@ -30,12 +35,6 @@ erDiagram
     ads ||--o{ ad_time_slots : schedules
     ads ||--o| ad_content_ratings : rated
     ads ||--o{ ad_impressions : tracked
-    ads ||--o{ ad_impressions_aggregated : summarized
-    
-    devices ||--o{ ad_impressions : views
-    
-    users ||--o{ campaigns : manages
-    users ||--o{ ads : manages
     
     regions {
         uuid region_id PK
@@ -76,6 +75,7 @@ erDiagram
     
     advertisers {
         uuid advertiser_id PK
+        varchar advertiser_code UK "unique across platform"
         varchar advertiser_name
         enum advertiser_type
         varchar address_line_1
@@ -134,6 +134,7 @@ erDiagram
         uuid host_id PK
         varchar host_name
         enum target_audience_age_group
+        text_array device_groups "list of group names"
         varchar address_line_1
         varchar address_line_2
         varchar city
@@ -189,6 +190,7 @@ erDiagram
     devices {
         varchar device_id PK
         uuid host_id FK
+        varchar device_group "max 1 from host device_groups"
         enum device_type
         enum device_rating
         enum display_size
@@ -209,9 +211,13 @@ erDiagram
     
     campaigns {
         uuid campaign_id PK
+        varchar campaign_code UK "unique across platform"
         uuid advertiser_id FK
         varchar campaign_name
         text campaign_description
+        varchar country "NOT NULL"
+        varchar city "NOT NULL"
+        varchar postcode "NOT NULL"
         date campaign_start_date
         date campaign_end_date
         date campaign_expiry_date
@@ -249,9 +255,13 @@ erDiagram
     
     ads {
         uuid ad_id PK
+        varchar ad_code UK "unique across platform"
         uuid campaign_id FK
         varchar ad_name
         text ad_description
+        varchar country "nullable"
+        varchar city "nullable"
+        varchar postcode "nullable"
         enum ad_position
         enum ad_type
         date ad_start_date
@@ -304,26 +314,11 @@ erDiagram
     ad_impressions {
         uuid impression_id PK
         uuid ad_id FK
-        varchar device_id FK
         timestamptz impression_timestamp PK
-        geography device_location
         integer session_duration_seconds
         boolean completed
         text user_agent
         inet ip_address
-    }
-    
-    ad_impressions_aggregated {
-        uuid aggregation_id PK
-        uuid ad_id FK
-        varchar device_id FK
-        date aggregation_date
-        integer aggregation_hour
-        integer impression_count
-        integer completed_count
-        bigint total_duration_seconds
-        timestamptz created_at
-        timestamptz updated_at
     }
     
     users {
@@ -331,6 +326,7 @@ erDiagram
         varchar username UK
         varchar email UK
         varchar full_name
+        enum role "admin or campaign_manager"
         timestamptz created_at
         timestamptz updated_at
         timestamptz deleted_at
@@ -339,18 +335,26 @@ erDiagram
 
 ## Key Relationships
 
+### User Roles and Creation
+
+1. **Users (admin)** create **advertisers** and **hosts**. Only admin users can create advertiser and host records (`advertisers.created_by_id`, `hosts.created_by_id` → `users`).
+2. **Users (campaign_manager)** create **campaigns** and **ads**. Campaign managers create campaign and ad records (`campaigns.created_by_id`, `ads.created_by_id` → `users`).
+3. **Advertisers** can have **multiple campaigns** (one-to-many).
+4. **Campaigns** can have **multiple ads** (one-to-many).
+5. **Advertisers, campaigns, and ads** are **unique across the platform** (primary key UUID plus unique business code: `advertiser_code`, `campaign_code`, `ad_code`).
+
 ### Core Entity Relationships
 
-1. **Advertisers → Campaigns → Ads**
-   - An advertiser creates multiple campaigns
-   - Each campaign contains multiple ads
+6. **Advertisers → Campaigns → Ads**
+   - An advertiser has many campaigns
+   - Each campaign has many ads
    - Ads are placed in specific positions on the device screen
 
-2. **Hosts → Devices**
+7. **Hosts → Devices**
    - A host owns/operates multiple devices
    - Devices are physical locations where ads are displayed
 
-3. **Geographic Hierarchy**
+8. **Geographic Hierarchy**
    - Regions contain countries
    - Countries contain cities
    - Cities contain postcodes
@@ -358,22 +362,21 @@ erDiagram
 
 ### Targeting & Filtering
 
-4. **Campaign Audience Targeting**
+9. **Campaign Audience Targeting**
    - Campaigns target specific regions, countries, cities, and postcodes
    - Many-to-many relationships via junction tables
    - Geographic filtering for ad delivery
 
-5. **Ad Content & Scheduling**
+10. **Ad Content & Scheduling**
    - Each ad has one content record (1:1)
    - Ads can have multiple time slots for scheduling
    - Content ratings are optional (0:1)
 
 ### Analytics & Tracking
 
-6. **Impressions**
-   - Tracks every ad view on every device
+11. **Impressions**
+   - Tracks every ad view (no device link)
    - Partitioned by timestamp for performance
-   - Aggregated table for faster analytics queries
 
 ## Enum Types
 
@@ -390,6 +393,7 @@ erDiagram
 - **age_group_enum**: 0-5, 6-12, 13-18, 19-35, 36-55, 55+
 - **mpaa_rating_enum**: G, PG, PG-13, R, NC-17
 - **esrb_rating_enum**: E, E10+, T, M, AO
+- **user_role_enum**: admin (creates advertisers and hosts), campaign_manager (creates campaigns and ads)
 
 ## Indexes & Performance
 
@@ -397,7 +401,7 @@ Key indexes for optimal query performance:
 
 1. **Geographic Indexes** (GIST): On all GEOGRAPHY columns for spatial queries
 2. **Campaign/Ad Status Indexes**: Composite indexes on status + date ranges
-3. **Impression Indexes**: On ad_id + device_id + timestamp
+3. **Impression Indexes**: On ad_id and timestamp
 4. **Foreign Key Indexes**: Automatically created on all FK columns
 
 ## Partitioning Strategy
