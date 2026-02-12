@@ -135,6 +135,9 @@ CREATE TYPE esrb_rating_enum AS ENUM (
 -- User roles: admin creates advertisers and hosts; campaign_manager creates campaigns and ads
 CREATE TYPE user_role_enum AS ENUM ('admin', 'campaign_manager');
 
+-- Device group status
+CREATE TYPE device_group_status_enum AS ENUM ('active', 'deleted', 'paused');
+
 -- ============================================================================
 -- GEOGRAPHIC TABLES
 -- ============================================================================
@@ -268,7 +271,6 @@ CREATE TABLE hosts (
     host_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     host_name VARCHAR(500) NOT NULL,
     target_audience_age_group age_group_enum,
-    device_groups TEXT[] NOT NULL DEFAULT '{}',
     
     -- Address information
     address_line_1 VARCHAR(500) NOT NULL,
@@ -286,6 +288,19 @@ CREATE TABLE hosts (
     created_by_id UUID,
     updated_by_id UUID,
     deleted_at TIMESTAMPTZ
+);
+
+-- Device groups table (host has 0 or many; each device assigned to max 1)
+CREATE TABLE device_groups (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
+    group_name VARCHAR(255) NOT NULL,
+    status device_group_status_enum NOT NULL DEFAULT 'active',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    created_by_id UUID,
+    updated_by_id UUID,
+    UNIQUE(host_id, group_name)
 );
 
 -- Host contacts table (one-to-many)
@@ -338,11 +353,11 @@ CREATE TABLE host_bank_accounts (
 -- DEVICE TABLES
 -- ============================================================================
 
--- Devices table (device_group: max 1 group from host's device_groups)
-CREATE TABLE devices (
+-- Ad display device table (device_group_id: optional FK to device_groups, max 1 per device)
+CREATE TABLE ad_display_device (
     device_id VARCHAR(255) PRIMARY KEY,
     host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
-    device_group VARCHAR(255),
+    device_group_id UUID REFERENCES device_groups(id) ON DELETE SET NULL,
     
     device_type device_type_enum NOT NULL,
     device_rating device_rating_enum NOT NULL,
@@ -366,6 +381,31 @@ CREATE TABLE devices (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
+);
+
+-- Device details (1-1 with ad_display_device): hardware, vendor, purchasing, prices, notes
+CREATE TABLE device_details (
+    device_id VARCHAR(255) PRIMARY KEY REFERENCES ad_display_device(device_id) ON DELETE CASCADE,
+    hardware_specifications TEXT,
+    vendor_specification TEXT,
+    vendor_name VARCHAR(255),
+    vendor_part_number VARCHAR(255),
+    vendor_serial_number VARCHAR(255),
+    purchasing_details TEXT,
+    purchase_date DATE,
+    purchase_order_number VARCHAR(100),
+    warranty_expiry_date DATE,
+    purchase_price NUMERIC(12, 2),
+    currency CHAR(3),
+    price_notes TEXT,
+    notes TEXT,
+    serial_number VARCHAR(255),
+    model_number VARCHAR(255),
+    firmware_version VARCHAR(100),
+    installed_date DATE,
+    last_maintenance_date DATE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
 );
 
 -- ============================================================================
@@ -538,6 +578,78 @@ CREATE TABLE ad_impressions_2026_11 PARTITION OF ad_impressions FOR VALUES FROM 
 CREATE TABLE ad_impressions_2026_12 PARTITION OF ad_impressions FOR VALUES FROM ('2026-12-01') TO ('2027-01-01');
 
 -- ============================================================================
+-- AD IMPRESSION ANALYTICS DATASTORE
+-- ============================================================================
+-- One row per impression from display_device; denormalized for scalable
+-- insights from device-level to advertiser-level and system-wide reporting.
+
+CREATE TABLE ad_impression_events (
+    impression_id UUID NOT NULL DEFAULT uuid_generate_v4(),
+    impression_timestamp TIMESTAMPTZ NOT NULL,
+    impression_date DATE NOT NULL,
+    impression_hour SMALLINT NOT NULL CHECK (impression_hour >= 0 AND impression_hour <= 23),
+    duration_seconds INTEGER,
+    completed BOOLEAN DEFAULT FALSE,
+    source VARCHAR(50) NOT NULL DEFAULT 'display_device',
+    ad_id UUID NOT NULL,
+    ad_code VARCHAR(255) NOT NULL,
+    ad_type ad_type_enum NOT NULL,
+    ad_position ad_position_enum NOT NULL,
+    ad_name VARCHAR(500),
+    campaign_id UUID NOT NULL,
+    campaign_code VARCHAR(255) NOT NULL,
+    campaign_name VARCHAR(500),
+    advertiser_id UUID NOT NULL,
+    advertiser_code VARCHAR(255) NOT NULL,
+    advertiser_name VARCHAR(500),
+    device_id VARCHAR(255) NOT NULL,
+    host_id UUID NOT NULL,
+    device_group_id UUID,
+    device_group_name VARCHAR(255),
+    device_type device_type_enum NOT NULL,
+    device_rating device_rating_enum NOT NULL,
+    display_size display_size_enum NOT NULL,
+    device_city VARCHAR(255) NOT NULL,
+    device_state_province VARCHAR(255),
+    device_postcode VARCHAR(20) NOT NULL,
+    device_country VARCHAR(255) NOT NULL,
+    campaign_country VARCHAR(255),
+    campaign_city VARCHAR(255),
+    campaign_postcode VARCHAR(20),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (impression_id, impression_date)
+) PARTITION BY RANGE (impression_date);
+
+CREATE TABLE ad_impression_events_2026_01 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
+CREATE TABLE ad_impression_events_2026_02 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+CREATE TABLE ad_impression_events_2026_03 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-03-01') TO ('2026-04-01');
+CREATE TABLE ad_impression_events_2026_04 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-04-01') TO ('2026-05-01');
+CREATE TABLE ad_impression_events_2026_05 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-05-01') TO ('2026-06-01');
+CREATE TABLE ad_impression_events_2026_06 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-06-01') TO ('2026-07-01');
+CREATE TABLE ad_impression_events_2026_07 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-07-01') TO ('2026-08-01');
+CREATE TABLE ad_impression_events_2026_08 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-08-01') TO ('2026-09-01');
+CREATE TABLE ad_impression_events_2026_09 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-09-01') TO ('2026-10-01');
+CREATE TABLE ad_impression_events_2026_10 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-10-01') TO ('2026-11-01');
+CREATE TABLE ad_impression_events_2026_11 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-11-01') TO ('2026-12-01');
+CREATE TABLE ad_impression_events_2026_12 PARTITION OF ad_impression_events FOR VALUES FROM ('2026-12-01') TO ('2027-01-01');
+
+CREATE TABLE impression_daily_rollups (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    rollup_type VARCHAR(50) NOT NULL,
+    dimension_id VARCHAR(255) NOT NULL,
+    dimension_label VARCHAR(500),
+    impression_date DATE NOT NULL,
+    impression_count BIGINT NOT NULL DEFAULT 0,
+    completed_count BIGINT NOT NULL DEFAULT 0,
+    total_duration_seconds BIGINT NOT NULL DEFAULT 0,
+    unique_devices_count INTEGER NOT NULL DEFAULT 0,
+    unique_ads_count INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(rollup_type, dimension_id, impression_date)
+);
+
+-- ============================================================================
 -- USERS TABLE
 -- ============================================================================
 
@@ -555,6 +667,8 @@ CREATE TABLE users (
 
 ALTER TABLE advertisers ADD CONSTRAINT fk_advertisers_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 ALTER TABLE hosts ADD CONSTRAINT fk_hosts_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE device_groups ADD CONSTRAINT fk_device_groups_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE device_groups ADD CONSTRAINT fk_device_groups_updated_by FOREIGN KEY (updated_by_id) REFERENCES users(user_id);
 ALTER TABLE campaigns ADD CONSTRAINT fk_campaigns_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 ALTER TABLE ads ADD CONSTRAINT fk_ads_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 
@@ -606,9 +720,12 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER update_advertisers_updated_at BEFORE UPDATE ON advertisers FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_hosts_updated_at BEFORE UPDATE ON hosts FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_device_groups_updated_at BEFORE UPDATE ON device_groups FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_device_details_updated_at BEFORE UPDATE ON device_details FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_campaigns_updated_at BEFORE UPDATE ON campaigns FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_ads_updated_at BEFORE UPDATE ON ads FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+CREATE TRIGGER update_impression_daily_rollups_updated_at BEFORE UPDATE ON impression_daily_rollups FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 
 -- ============================================================================
 -- COMMENTS
@@ -616,11 +733,15 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECU
 
 COMMENT ON TABLE advertisers IS 'Stores advertiser/client information who purchase ad campaigns';
 COMMENT ON TABLE hosts IS 'Stores information about device owners/operators';
-COMMENT ON TABLE devices IS 'Physical devices (cars, shops, houses) that display ads';
+COMMENT ON TABLE device_groups IS 'Groups under a host; devices can be assigned to at most one group';
+COMMENT ON TABLE ad_display_device IS 'Physical devices (cars, shops, houses) that display ads';
+COMMENT ON TABLE device_details IS '1-1: hardware specs, vendor, purchasing, prices, notes per device';
 COMMENT ON TABLE campaigns IS 'Marketing campaigns created by advertisers';
 COMMENT ON TABLE ads IS 'Individual advertisements within campaigns';
 COMMENT ON TABLE ad_content IS 'Media content and settings for each ad';
 COMMENT ON TABLE ad_impressions IS 'Tracks each time an ad is displayed (partitioned by date)';
-COMMENT ON COLUMN devices.avg_idle_time IS 'Average idle time in minutes (must be multiple of 5)';
+COMMENT ON TABLE ad_impression_events IS 'Fact table: one row per ad impression from display_device; denormalized for scalable insights from device to advertiser level';
+COMMENT ON TABLE impression_daily_rollups IS 'Daily pre-aggregates by rollup_type (advertiser, campaign, device_group, city, postcode, system); for fast business reporting';
+COMMENT ON COLUMN ad_display_device.avg_idle_time IS 'Average idle time in minutes (must be multiple of 5)';
 COMMENT ON COLUMN ad_content.alloted_max_impression_count IS 'Maximum number of times this ad can be shown';
 COMMENT ON COLUMN ad_time_slots.time_slot_start IS 'Start time in 15-minute intervals (HH:MM format)';

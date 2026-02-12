@@ -2,13 +2,12 @@
 -- Host Tables
 -- ============================================================================
 -- Hosts are created by admin users (created_by_id references users with role admin).
--- device_groups: list of group names; each device under this host can be assigned to at most one.
+-- A host has 0 or many device_groups; each device can be assigned to at most one device_group.
 
 CREATE TABLE hosts (
     host_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     host_name VARCHAR(500) NOT NULL,
     target_audience_age_group age_group_enum,
-    device_groups TEXT[] NOT NULL DEFAULT '{}',
     address_line_1 VARCHAR(500) NOT NULL,
     address_line_2 VARCHAR(500),
     city VARCHAR(255) NOT NULL,
@@ -22,6 +21,18 @@ CREATE TABLE hosts (
     created_by_id UUID,
     updated_by_id UUID,
     deleted_at TIMESTAMPTZ
+);
+
+CREATE TABLE device_groups (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
+    group_name VARCHAR(255) NOT NULL,
+    status device_group_status_enum NOT NULL DEFAULT 'active',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    created_by_id UUID,
+    updated_by_id UUID,
+    UNIQUE(host_id, group_name)
 );
 
 CREATE TABLE host_contacts (
@@ -62,10 +73,10 @@ CREATE TABLE host_bank_accounts (
     deleted_at TIMESTAMPTZ
 );
 
-CREATE TABLE devices (
+CREATE TABLE ad_display_device (
     device_id VARCHAR(255) PRIMARY KEY,
     host_id UUID NOT NULL REFERENCES hosts(host_id) ON DELETE CASCADE,
-    device_group VARCHAR(255),
+    device_group_id UUID REFERENCES device_groups(id) ON DELETE SET NULL,
     device_type device_type_enum NOT NULL,
     device_rating device_rating_enum NOT NULL,
     display_size display_size_enum NOT NULL,
@@ -82,4 +93,29 @@ CREATE TABLE devices (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
+);
+
+-- Device details (1-1 with ad_display_device): hardware, vendor, purchasing, prices, notes
+CREATE TABLE device_details (
+    device_id VARCHAR(255) PRIMARY KEY REFERENCES ad_display_device(device_id) ON DELETE CASCADE,
+    hardware_specifications TEXT,
+    vendor_specification TEXT,
+    vendor_name VARCHAR(255),
+    vendor_part_number VARCHAR(255),
+    vendor_serial_number VARCHAR(255),
+    purchasing_details TEXT,
+    purchase_date DATE,
+    purchase_order_number VARCHAR(100),
+    warranty_expiry_date DATE,
+    purchase_price NUMERIC(12, 2),
+    currency CHAR(3),
+    price_notes TEXT,
+    notes TEXT,
+    serial_number VARCHAR(255),
+    model_number VARCHAR(255),
+    firmware_version VARCHAR(100),
+    installed_date DATE,
+    last_maintenance_date DATE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
 );

@@ -16,11 +16,15 @@ CREATE TABLE users (
     CONSTRAINT valid_user_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
--- Foreign keys: who created advertisers, hosts, campaigns, and ads
+-- Foreign keys: who created advertisers, hosts, device_groups, campaigns, and ads
 ALTER TABLE advertisers
     ADD CONSTRAINT fk_advertisers_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 ALTER TABLE hosts
     ADD CONSTRAINT fk_hosts_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE device_groups
+    ADD CONSTRAINT fk_device_groups_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
+ALTER TABLE device_groups
+    ADD CONSTRAINT fk_device_groups_updated_by FOREIGN KEY (updated_by_id) REFERENCES users(user_id);
 ALTER TABLE campaigns
     ADD CONSTRAINT fk_campaigns_created_by FOREIGN KEY (created_by_id) REFERENCES users(user_id);
 ALTER TABLE ads

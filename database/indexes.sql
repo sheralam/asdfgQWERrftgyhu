@@ -6,7 +6,7 @@
 -- Geographic indexes (GIST for geography columns)
 CREATE INDEX idx_advertisers_location ON advertisers USING GIST(location);
 CREATE INDEX idx_hosts_location ON hosts USING GIST(location);
-CREATE INDEX idx_devices_location ON devices USING GIST(location);
+CREATE INDEX idx_ad_display_device_location ON ad_display_device USING GIST(location);
 CREATE INDEX idx_cities_location ON cities USING GIST(location);
 CREATE INDEX idx_postcodes_location ON postcodes USING GIST(location);
 
@@ -33,6 +33,32 @@ CREATE INDEX idx_campaign_cities_campaign ON campaign_cities(campaign_id);
 CREATE INDEX idx_campaign_cities_city ON campaign_cities(city_id);
 CREATE INDEX idx_campaign_postcodes_campaign ON campaign_postcodes(campaign_id);
 
--- Device indexes
-CREATE INDEX idx_devices_host ON devices(host_id);
-CREATE INDEX idx_devices_type_rating ON devices(device_type, device_rating);
+-- Device group indexes
+CREATE INDEX idx_device_groups_host ON device_groups(host_id);
+CREATE INDEX idx_device_groups_status ON device_groups(status) WHERE status = 'active';
+
+-- Device details indexes (1-1 with ad_display_device)
+CREATE INDEX idx_device_details_vendor ON device_details(vendor_name);
+CREATE INDEX idx_device_details_purchase_date ON device_details(purchase_date);
+
+-- Ad display device indexes
+CREATE INDEX idx_ad_display_device_host ON ad_display_device(host_id);
+CREATE INDEX idx_ad_display_device_device_group ON ad_display_device(device_group_id);
+CREATE INDEX idx_ad_display_device_type_rating ON ad_display_device(device_type, device_rating);
+
+-- Impression analytics datastore: fact table indexes
+CREATE INDEX idx_impression_events_date ON ad_impression_events(impression_date);
+CREATE INDEX idx_impression_events_advertiser_date ON ad_impression_events(advertiser_id, impression_date);
+CREATE INDEX idx_impression_events_campaign_date ON ad_impression_events(campaign_id, impression_date);
+CREATE INDEX idx_impression_events_ad_date ON ad_impression_events(ad_id, impression_date);
+CREATE INDEX idx_impression_events_device_date ON ad_impression_events(device_id, impression_date);
+CREATE INDEX idx_impression_events_host_date ON ad_impression_events(host_id, impression_date);
+CREATE INDEX idx_impression_events_device_group_date ON ad_impression_events(device_group_id, impression_date) WHERE device_group_id IS NOT NULL;
+CREATE INDEX idx_impression_events_city_date ON ad_impression_events(device_city, impression_date);
+CREATE INDEX idx_impression_events_postcode_date ON ad_impression_events(device_postcode, impression_date);
+CREATE INDEX idx_impression_events_country_date ON ad_impression_events(device_country, impression_date);
+CREATE INDEX idx_impression_events_timestamp ON ad_impression_events(impression_timestamp);
+-- Impression daily rollups
+CREATE INDEX idx_impression_rollups_type_date ON impression_daily_rollups(rollup_type, impression_date);
+CREATE INDEX idx_impression_rollups_dimension_date ON impression_daily_rollups(dimension_id, impression_date);
+CREATE INDEX idx_impression_rollups_date ON impression_daily_rollups(impression_date);

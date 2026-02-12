@@ -13,7 +13,7 @@ WITH device_info AS (
         d.state_province,
         d.postal_code,
         d.country
-    FROM devices d
+    FROM ad_display_device d
     WHERE d.device_id = :device_id  -- Parameter from API request
         AND d.deleted_at IS NULL
 ),

@@ -37,5 +37,8 @@ CREATE TYPE mpaa_rating_enum AS ENUM ('G', 'PG', 'PG-13', 'R', 'NC-17');
 
 CREATE TYPE esrb_rating_enum AS ENUM ('E', 'E10+', 'T', 'M', 'AO');
 
--- User roles: admin creates advertisers; campaign_manager creates campaigns and ads
+-- User roles: admin creates advertisers and hosts; campaign_manager creates campaigns and ads
 CREATE TYPE user_role_enum AS ENUM ('admin', 'campaign_manager');
+
+-- Device group status
+CREATE TYPE device_group_status_enum AS ENUM ('active', 'deleted', 'paused');
